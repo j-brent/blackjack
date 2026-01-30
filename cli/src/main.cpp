@@ -1,8 +1,8 @@
 #include "blackjack/game.hpp"
-#include <iostream>
-#include <string>
 #include <algorithm>
 #include <cctype>
+#include <iostream>
+#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -274,7 +274,11 @@ bool play_round(blackjack::Game& game) {
         std::cout << "\n";
 
         // Dealer turn
-        (void)game.play_dealer();
+        auto play_result = game.play_dealer();
+        if (play_result != blackjack::ActionResult::Success) {
+            std::cout << "An unexpected error occurred. Exiting.\n";
+            return false;
+        }
         display_dealer_reveal(game);
 
         // Show final dealer action
