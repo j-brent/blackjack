@@ -1,10 +1,5 @@
 #include "blackjack/game.hpp"
 
-#include <ftxui/component/component.hpp>
-#include <ftxui/component/screen_interactive.hpp>
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/component/event.hpp>
-
 #include <algorithm>
 #include <cassert>
 #include <chrono>
@@ -12,6 +7,11 @@
 #include <string>
 #include <thread>
 #include <vector>
+
+#include <ftxui/component/component.hpp>
+#include <ftxui/component/event.hpp>
+#include <ftxui/component/screen_interactive.hpp>
+#include <ftxui/dom/elements.hpp>
 
 using namespace ftxui;
 using namespace blackjack;
@@ -68,48 +68,28 @@ Element render_card(const Card& card) {
     // Rank row (top-left)
     if (rank_str == "10") {
         lines.push_back(
-            hbox({
-                text("\u2502") | color(Color::GrayDark),
-                text("10   ") | color(suit_color),
-                text("\u2502") | color(Color::GrayDark)
-            })
-        );
+            hbox({text("\u2502") | color(Color::GrayDark), text("10   ") | color(suit_color),
+                  text("\u2502") | color(Color::GrayDark)}));
     } else {
-        lines.push_back(
-            hbox({
-                text("\u2502") | color(Color::GrayDark),
-                text(rank_str + "    ") | color(suit_color),
-                text("\u2502") | color(Color::GrayDark)
-            })
-        );
+        lines.push_back(hbox({text("\u2502") | color(Color::GrayDark),
+                              text(rank_str + "    ") | color(suit_color),
+                              text("\u2502") | color(Color::GrayDark)}));
     }
 
     // Suit row (centered)
-    lines.push_back(
-        hbox({
-            text("\u2502") | color(Color::GrayDark),
-            text("  " + suit_str + "  ") | color(suit_color),
-            text("\u2502") | color(Color::GrayDark)
-        })
-    );
+    lines.push_back(hbox({text("\u2502") | color(Color::GrayDark),
+                          text("  " + suit_str + "  ") | color(suit_color),
+                          text("\u2502") | color(Color::GrayDark)}));
 
     // Rank row (bottom-right)
     if (rank_str == "10") {
         lines.push_back(
-            hbox({
-                text("\u2502") | color(Color::GrayDark),
-                text("  10 ") | color(suit_color),
-                text("\u2502") | color(Color::GrayDark)
-            })
-        );
+            hbox({text("\u2502") | color(Color::GrayDark), text("  10 ") | color(suit_color),
+                  text("\u2502") | color(Color::GrayDark)}));
     } else {
-        lines.push_back(
-            hbox({
-                text("\u2502") | color(Color::GrayDark),
-                text("   " + rank_str + " ") | color(suit_color),
-                text("\u2502") | color(Color::GrayDark)
-            })
-        );
+        lines.push_back(hbox({text("\u2502") | color(Color::GrayDark),
+                              text("   " + rank_str + " ") | color(suit_color),
+                              text("\u2502") | color(Color::GrayDark)}));
     }
 
     // Bottom border
@@ -123,34 +103,23 @@ Element render_face_down_card() {
     std::vector<Element> lines;
 
     lines.push_back(text("\u250c\u2500\u2500\u2500\u2500\u2500\u2510") | color(Color::GrayDark));
-    lines.push_back(
-        hbox({
-            text("\u2502") | color(Color::GrayDark),
-            text("\u2591\u2591\u2591\u2591\u2591") | color(Color::GrayDark),
-            text("\u2502") | color(Color::GrayDark)
-        })
-    );
-    lines.push_back(
-        hbox({
-            text("\u2502") | color(Color::GrayDark),
-            text("\u2591\u2591\u2591\u2591\u2591") | color(Color::GrayDark),
-            text("\u2502") | color(Color::GrayDark)
-        })
-    );
-    lines.push_back(
-        hbox({
-            text("\u2502") | color(Color::GrayDark),
-            text("\u2591\u2591\u2591\u2591\u2591") | color(Color::GrayDark),
-            text("\u2502") | color(Color::GrayDark)
-        })
-    );
+    lines.push_back(hbox({text("\u2502") | color(Color::GrayDark),
+                          text("\u2591\u2591\u2591\u2591\u2591") | color(Color::GrayDark),
+                          text("\u2502") | color(Color::GrayDark)}));
+    lines.push_back(hbox({text("\u2502") | color(Color::GrayDark),
+                          text("\u2591\u2591\u2591\u2591\u2591") | color(Color::GrayDark),
+                          text("\u2502") | color(Color::GrayDark)}));
+    lines.push_back(hbox({text("\u2502") | color(Color::GrayDark),
+                          text("\u2591\u2591\u2591\u2591\u2591") | color(Color::GrayDark),
+                          text("\u2502") | color(Color::GrayDark)}));
     lines.push_back(text("\u2514\u2500\u2500\u2500\u2500\u2500\u2518") | color(Color::GrayDark));
 
     return vbox(lines);
 }
 
 // Render a hand of cards
-Element render_hand(std::span<const Card> cards, bool show_all = true, bool hole_card_visible = false) {
+Element render_hand(std::span<const Card> cards, bool show_all = true,
+                    bool hole_card_visible = false) {
     if (cards.empty()) {
         return text("");
     }
@@ -264,7 +233,8 @@ Element build_player_panel_split(const Game& game, int terminal_width) {
 
         // Label
         std::string label = "  Hand " + std::to_string(index + 1);
-        content.push_back(text(label) | (is_active ? (color(Color::White) | bold) : color(Color::GrayLight)));
+        content.push_back(text(label) |
+                          (is_active ? (color(Color::White) | bold) : color(Color::GrayLight)));
         content.push_back(text(""));
 
         // Cards
@@ -291,17 +261,9 @@ Element build_player_panel_split(const Game& game, int terminal_width) {
 
     // Side-by-side if width >= 60, otherwise stacked
     if (terminal_width >= 60) {
-        return hbox({
-            build_hand_subpanel(0) | flex,
-            separator(),
-            build_hand_subpanel(1) | flex
-        });
+        return hbox({build_hand_subpanel(0) | flex, separator(), build_hand_subpanel(1) | flex});
     } else {
-        return vbox({
-            build_hand_subpanel(0),
-            separator(),
-            build_hand_subpanel(1)
-        });
+        return vbox({build_hand_subpanel(0), separator(), build_hand_subpanel(1)});
     }
 }
 
@@ -312,9 +274,7 @@ Element build_status_bar(const Game& game) {
     Color message_color = Color::GrayLight;
 
     switch (state) {
-        case GameState::WaitingForDeal:
-            message = "  Press (N)ew Game to start";
-            break;
+        case GameState::WaitingForDeal: message = "  Press (N)ew Game to start"; break;
 
         case GameState::PlayerTurn: {
             auto hands = game.player_hands();
@@ -328,9 +288,7 @@ Element build_status_bar(const Game& game) {
             break;
         }
 
-        case GameState::DealerTurn:
-            message = "  Dealer's turn...";
-            break;
+        case GameState::DealerTurn: message = "  Dealer's turn..."; break;
 
         case GameState::RoundOver: {
             auto hands = game.player_hands();
@@ -412,9 +370,7 @@ Element build_status_bar(const Game& game) {
                             message = "  Push.";
                             message_color = Color::Yellow;
                             break;
-                        default:
-                            message = "  Round over";
-                            break;
+                        default: message = "  Round over"; break;
                     }
                 }
             }
@@ -458,33 +414,44 @@ int main() {
 
     // --- Dynamic controls (shown/hidden via Maybe) ---
 
-    auto hit_btn = Button(" (H)it ", [&]() {
-        if (game.hit() == ActionResult::Success) {
-            play_dealer_if_needed();
-        }
-    }, ButtonOption::Ascii());
+    auto hit_btn = Button(
+        " (H)it ",
+        [&]() {
+            if (game.hit() == ActionResult::Success) {
+                play_dealer_if_needed();
+            }
+        },
+        ButtonOption::Ascii());
 
-    auto stand_btn = Button(" (S)tand ", [&]() {
-        if (game.stand() == ActionResult::Success) {
-            play_dealer_if_needed();
-        }
-    }, ButtonOption::Ascii());
+    auto stand_btn = Button(
+        " (S)tand ",
+        [&]() {
+            if (game.stand() == ActionResult::Success) {
+                play_dealer_if_needed();
+            }
+        },
+        ButtonOption::Ascii());
 
-    auto split_btn = Button(" S(p)lit ", [&]() {
-        if (game.split() == ActionResult::Success) {
-            play_dealer_if_needed();
-        }
-    }, ButtonOption::Ascii());
+    auto split_btn = Button(
+        " S(p)lit ",
+        [&]() {
+            if (game.split() == ActionResult::Success) {
+                play_dealer_if_needed();
+            }
+        },
+        ButtonOption::Ascii());
 
-    auto deal_btn = Button(" (N)ew Game ", [&]() {
-        if (game.deal() == ActionResult::Success) {
-            play_dealer_if_needed();
-        }
-    }, ButtonOption::Ascii());
+    auto deal_btn = Button(
+        " (N)ew Game ",
+        [&]() {
+            if (game.deal() == ActionResult::Success) {
+                play_dealer_if_needed();
+            }
+        },
+        ButtonOption::Ascii());
 
-    auto quit_btn = Button(" (Q)uit ", [&]() {
-        screen.ExitLoopClosure()();
-    }, ButtonOption::Ascii());
+    auto quit_btn =
+        Button(" (Q)uit ", [&]() { screen.ExitLoopClosure()(); }, ButtonOption::Ascii());
 
     auto hit_maybe = Maybe(hit_btn, [&]() {
         auto actions = game.available_actions();
@@ -503,9 +470,8 @@ int main() {
         return s == GameState::RoundOver || s == GameState::WaitingForDeal;
     });
 
-    auto controls_container = Container::Horizontal({
-        hit_maybe, stand_maybe, split_maybe, deal_maybe, quit_btn
-    });
+    auto controls_container =
+        Container::Horizontal({hit_maybe, stand_maybe, split_maybe, deal_maybe, quit_btn});
 
     auto ui_renderer = Renderer(controls_container, [&] {
         // Get terminal dimensions
@@ -515,12 +481,9 @@ int main() {
 
         // Check minimum size
         if (terminal_width < 40 || terminal_height < 20) {
-            return vbox({
-                text(""),
-                text("  Please resize terminal") | center,
-                text("  (40x20 minimum)") | center,
-                text("")
-            }) | border | color(Color::Yellow);
+            return vbox({text(""), text("  Please resize terminal") | center,
+                         text("  (40x20 minimum)") | center, text("")}) |
+                   border | color(Color::Yellow);
         }
 
         // Build panels
@@ -539,27 +502,22 @@ int main() {
 
         // Controls panel - render the interactive component
         auto controls_element = controls_container->Render();
-        auto controls_panel = vbox({
-            hbox({text("  "), controls_element})
-        }) | border | color(Color::GrayDark);
+        auto controls_panel =
+            vbox({hbox({text("  "), controls_element})}) | border | color(Color::GrayDark);
 
         // Status bar
         auto status_element = build_status_bar(game);
         auto status_panel = vbox({status_element}) | border | color(Color::GrayDark);
 
         // Combine all panels
-        return vbox({
-            title_panel,
-            dealer_panel | flex,
-            player_panel | flex,
-            controls_panel,
-            status_panel
-        });
+        return vbox(
+            {title_panel, dealer_panel | flex, player_panel | flex, controls_panel, status_panel});
     });
 
     // Handle keyboard shortcuts
     auto event_handler = CatchEvent(ui_renderer, [&](Event event) {
-        if (event == Event::Character('q') || event == Event::Character('Q') || event == Event::Escape) {
+        if (event == Event::Character('q') || event == Event::Character('Q') ||
+            event == Event::Escape) {
             screen.ExitLoopClosure()();
             return true;
         }

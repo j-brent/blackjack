@@ -1,0 +1,52 @@
+BasedOnStyle: LLVM
+
+# Indentation
+IndentWidth: 4
+UseTab: Never
+AccessModifierOffset: -4
+NamespaceIndentation: None
+IndentCaseLabels: true
+
+# Braces (K&R: opening brace on same line)
+BreakBeforeBraces: Attach
+
+# Line length
+ColumnLimit: 100
+
+# Include ordering
+IncludeBlocks: Regroup
+IncludeCategories:
+  # 1. Corresponding header (auto-detected by clang-format)
+  - Regex: '^"blackjack/'
+    Priority: 2
+  - Regex: '^<blackjack/'
+    Priority: 2
+  # 2. Standard library
+  - Regex: '^<[a-z_]+>'
+    Priority: 3
+  # 3. Third-party
+  - Regex: '.*'
+    Priority: 4
+SortIncludes: CaseSensitive
+
+# Alignment
+AlignAfterOpenBracket: Align
+AlignOperands: Align
+AlignTrailingComments: true
+
+# Short forms
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# Spacing
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyBlock: false
+
+# Other
+PointerAlignment: Left
+ReferenceAlignment: Left
+FixNamespaceComments: true

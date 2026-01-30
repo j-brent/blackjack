@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Pre-commit hook: auto-format staged C++ files with clang-format.
+# Install: git config core.hooksPath blackjack/.githooks
+
+set -euo pipefail
+
+# Find staged C++ files (added, copied, modified, renamed)
+staged_files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.cpp' '*.hpp' || true)
+
+if [ -z "$staged_files" ]; then
+    exit 0
+fi
+
+# Verify clang-format is available
+if ! command -v clang-format &>/dev/null; then
+    echo "error: clang-format not found. Install LLVM or add clang-format to PATH."
+    exit 1
+fi
+
+# Format each staged file and re-stage it
+for file in $staged_files; do
+    if [ -f "$file" ]; then
+        clang-format -i "$file"
+        git add "$file"
+    fi
+done

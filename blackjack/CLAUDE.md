@@ -23,3 +23,10 @@ cmake --build build
 ## Formatting
 
 Run `clang-format` on all `.cpp` and `.hpp` files before committing. Use the project's `.clang-format` if present, otherwise: 4-space indent, K&R braces (consistent with `.dev-team/coding-standards.md`).
+
+A pre-commit hook auto-formats staged C++ files. Configure once per clone:
+
+```sh
+git config core.hooksPath blackjack/.githooks
+git config blame.ignoreRevsFile blackjack/.git-blame-ignore-revs
+```

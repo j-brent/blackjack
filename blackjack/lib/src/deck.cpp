@@ -1,4 +1,5 @@
 #include "blackjack/deck.hpp"
+
 #include <algorithm>
 #include <cassert>
 
@@ -9,10 +10,7 @@ Deck::Deck(std::mt19937& rng) {
 
     for (int s = 0; s < suits_per_deck; ++s) {
         for (int r = 1; r <= ranks_per_suit; ++r) {
-            cards_.push_back(Card{
-                static_cast<Rank>(r),
-                static_cast<Suit>(s)
-            });
+            cards_.push_back(Card{static_cast<Rank>(r), static_cast<Suit>(s)});
         }
     }
 

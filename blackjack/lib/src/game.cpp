@@ -2,11 +2,9 @@
 
 namespace blackjack {
 
-Game::Game()
-    : rng_(std::random_device{}()) {}
+Game::Game() : rng_(std::random_device{}()) {}
 
-Game::Game(uint32_t seed)
-    : rng_(seed) {}
+Game::Game(uint32_t seed) : rng_(seed) {}
 
 // --- Commands ---
 
@@ -51,7 +49,8 @@ ActionResult Game::hit() {
         return ActionResult::InvalidAction;
     }
 
-    hs.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
+    hs.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always
+                                     // populated during active play
 
     if (hs.hand.is_bust()) {
         hs.is_stood = true;
@@ -98,14 +97,16 @@ ActionResult Game::split() {
     // Replace active hand with first card
     active = HandState{};
     active.hand.add_card(card1);
-    active.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
+    active.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is
+                                         // always populated during active play
     active.is_from_split = true;
     active.is_split_aces = splitting_aces;
 
     // Create second hand — push_back may reallocate, invalidating `active`
     HandState second{};
     second.hand.add_card(card2);
-    second.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
+    second.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is
+                                         // always populated during active play
     second.is_from_split = true;
     second.is_split_aces = splitting_aces;
     r.player_hands.push_back(std::move(second));
@@ -141,7 +142,8 @@ ActionResult Game::play_dealer() {
         // Dealer draws: hit on soft 17, stand on hard 17+
         while (r.dealer_hand.value() < dealer_stand_threshold ||
                (r.dealer_hand.value() == dealer_stand_threshold && r.dealer_hand.is_soft())) {
-            r.dealer_hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
+            r.dealer_hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) —
+                                                   // deck_ is always populated during active play
         }
     }
 
@@ -158,17 +160,20 @@ GameState Game::state() const {
 }
 
 std::span<const HandState> Game::player_hands() const {
-    if (!round_) return {};
+    if (!round_)
+        return {};
     return round_->player_hands;
 }
 
 std::size_t Game::active_hand_index() const {
-    if (!round_) return 0;
+    if (!round_)
+        return 0;
     return round_->active_hand_index;
 }
 
 const Hand& Game::dealer_hand() const {
-    if (!round_) return empty_hand_;
+    if (!round_)
+        return empty_hand_;
     return round_->dealer_hand;
 }
 
@@ -177,13 +182,16 @@ bool Game::is_dealer_hole_card_visible() const {
 }
 
 std::optional<Card> Game::dealer_up_card() const {
-    if (!round_ || round_->dealer_hand.size() == 0) return std::nullopt;
+    if (!round_ || round_->dealer_hand.size() == 0)
+        return std::nullopt;
     return round_->dealer_hand.cards()[0];
 }
 
 std::vector<PlayerAction> Game::available_actions() const {
-    if (state_ != GameState::PlayerTurn) return {};
-    if (!round_) return {};
+    if (state_ != GameState::PlayerTurn)
+        return {};
+    if (!round_)
+        return {};
 
     std::vector<PlayerAction> actions;
     actions.push_back(PlayerAction::Hit);
@@ -206,7 +214,8 @@ void Game::determine_results() {
     int dealer_val = r.dealer_hand.value();
 
     for (auto& hs : r.player_hands) {
-        // NOLINTNEXTLINE(bugprone-branch-clone) — bust and dealer-natural both yield Lose, but are logically distinct conditions
+        // NOLINTNEXTLINE(bugprone-branch-clone) — bust and dealer-natural both yield Lose, but are
+        // logically distinct conditions
         if (hs.hand.is_bust()) {
             hs.result = HandResult::Lose;
         } else if (!hs.is_from_split && hs.hand.is_natural_blackjack()) {
