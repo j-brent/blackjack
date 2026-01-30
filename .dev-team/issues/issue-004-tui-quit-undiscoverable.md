@@ -2,9 +2,9 @@
 id: ISSUE-004
 title: FTXUI frontend quit shortcut (q) is not displayed
 severity: medium
-status: open
+status: resolved
 reported: 2026-01-30
-resolved:
+resolved: 2026-01-30
 assigned-to:
 ---
 

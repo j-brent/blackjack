@@ -2,9 +2,9 @@
 id: ISSUE-003
 title: FTXUI frontend has no way to start a new game after round ends
 severity: high
-status: open
+status: resolved
 reported: 2026-01-30
-resolved:
+resolved: 2026-01-30
 assigned-to:
 ---
 
