@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include "blackjack/game.hpp"
+#include <tuple>
 
 using namespace blackjack;
 
@@ -7,7 +8,7 @@ using namespace blackjack;
 static Game make_normal_game() {
     for (uint32_t seed = 1; seed < 100000; seed++) {
         Game game(seed);
-        (void)game.deal();
+        std::ignore = game.deal();
         if (game.state() == GameState::PlayerTurn) {
             return Game(seed);
         }
@@ -32,7 +33,7 @@ TEST_CASE("Game deal operation - AC-4", "[game]") {
 
     SECTION("deal() in PlayerTurn returns InvalidAction - AC-4c") {
         auto game = make_normal_game();
-        (void)game.deal();
+        std::ignore = game.deal();
         REQUIRE(game.state() == GameState::PlayerTurn);
 
         auto result = game.deal();
@@ -46,7 +47,7 @@ TEST_CASE("Natural blackjack on deal - AC-4b", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
 
             auto hands = game.player_hands();
             if (!hands.empty() && hands[0].hand.is_natural_blackjack()) {
@@ -64,7 +65,7 @@ TEST_CASE("Hit operation - AC-5", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 10000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
             auto before = game.player_hands()[0].hand.size();
@@ -87,7 +88,7 @@ TEST_CASE("Hit operation - AC-5", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
             for (int i = 0; i < 10; i++) {
@@ -109,7 +110,7 @@ TEST_CASE("Hit operation - AC-5", "[game]") {
 TEST_CASE("Stand operation - AC-6", "[game]") {
     SECTION("stand() with single hand transitions to DealerTurn") {
         auto game = make_normal_game();
-        (void)game.deal();
+        std::ignore = game.deal();
         REQUIRE(game.state() == GameState::PlayerTurn);
 
         auto result = game.stand();
@@ -121,7 +122,7 @@ TEST_CASE("Stand operation - AC-6", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
             auto hands = game.player_hands();
@@ -134,7 +135,7 @@ TEST_CASE("Stand operation - AC-6", "[game]") {
             REQUIRE(game.player_hands().size() == 2);
             REQUIRE(game.active_hand_index() == 0);
 
-            (void)game.stand();
+            std::ignore = game.stand();
             REQUIRE(game.active_hand_index() == 1);
             REQUIRE(game.state() == GameState::PlayerTurn);
             found = true;
@@ -149,7 +150,7 @@ TEST_CASE("Split operation - AC-7", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
             if (!game.player_hands()[0].hand.can_split()) continue;
 
@@ -168,7 +169,7 @@ TEST_CASE("Split operation - AC-7", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
             auto hands = game.player_hands();
@@ -188,7 +189,7 @@ TEST_CASE("Split operation - AC-7", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 10000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
             if (game.player_hands()[0].hand.can_split()) continue;
 
@@ -205,7 +206,7 @@ TEST_CASE("Split operation - AC-7", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
             if (!game.player_hands()[0].hand.can_split()) continue;
             if (game.player_hands()[0].hand.cards()[0].rank == Rank::Ace) continue;
@@ -227,10 +228,10 @@ TEST_CASE("Dealer logic - AC-8", "[game]") {
         bool tested = false;
         for (uint32_t seed = 1; seed < 10000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
-            (void)game.stand();
+            std::ignore = game.stand();
             REQUIRE(game.state() == GameState::DealerTurn);
 
             auto result = game.play_dealer();
@@ -253,11 +254,11 @@ TEST_CASE("Game results - AC-9", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
-            (void)game.stand();
-            (void)game.play_dealer();
+            std::ignore = game.stand();
+            std::ignore = game.play_dealer();
 
             if (game.state() != GameState::RoundOver) continue;
 
@@ -277,11 +278,11 @@ TEST_CASE("Game results - AC-9", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
-            (void)game.stand();
-            (void)game.play_dealer();
+            std::ignore = game.stand();
+            std::ignore = game.play_dealer();
             if (game.state() != GameState::RoundOver) continue;
 
             auto hands = game.player_hands();
@@ -300,11 +301,11 @@ TEST_CASE("Game results - AC-9", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
-            (void)game.stand();
-            (void)game.play_dealer();
+            std::ignore = game.stand();
+            std::ignore = game.play_dealer();
             if (game.state() != GameState::RoundOver) continue;
 
             auto hands = game.player_hands();
@@ -323,12 +324,12 @@ TEST_CASE("Game results - AC-9", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
 
             auto hands = game.player_hands();
             if (!hands.empty() && hands[0].hand.is_natural_blackjack() &&
                 !game.dealer_hand().is_natural_blackjack()) {
-                (void)game.play_dealer();
+                std::ignore = game.play_dealer();
                 hands = game.player_hands();
                 REQUIRE(hands[0].result == HandResult::Blackjack);
                 found = true;
@@ -342,16 +343,16 @@ TEST_CASE("Game results - AC-9", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
             for (int i = 0; i < 10; i++) {
-                (void)game.hit();
+                std::ignore = game.hit();
                 auto hands = game.player_hands();
                 if (hands[0].hand.is_bust()) {
                     // Play dealer to get results
                     if (game.state() == GameState::DealerTurn) {
-                        (void)game.play_dealer();
+                        std::ignore = game.play_dealer();
                     }
                     hands = game.player_hands();
                     REQUIRE(hands[0].result == HandResult::Lose);
@@ -369,11 +370,11 @@ TEST_CASE("Game results - AC-9", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
 
-            (void)game.stand();
-            (void)game.play_dealer();
+            std::ignore = game.stand();
+            std::ignore = game.play_dealer();
             if (game.state() != GameState::RoundOver) continue;
 
             auto hands = game.player_hands();
@@ -390,9 +391,9 @@ TEST_CASE("Game results - AC-9", "[game]") {
 TEST_CASE("State integrity - AC-10", "[game]") {
     SECTION("hit() in RoundOver returns error") {
         auto game = make_normal_game();
-        (void)game.deal();
-        (void)game.stand();
-        (void)game.play_dealer();
+        std::ignore = game.deal();
+        std::ignore = game.stand();
+        std::ignore = game.play_dealer();
         REQUIRE(game.state() == GameState::RoundOver);
 
         auto result = game.hit();
@@ -401,8 +402,8 @@ TEST_CASE("State integrity - AC-10", "[game]") {
 
     SECTION("split() in DealerTurn returns error") {
         auto game = make_normal_game();
-        (void)game.deal();
-        (void)game.stand();
+        std::ignore = game.deal();
+        std::ignore = game.stand();
         REQUIRE(game.state() == GameState::DealerTurn);
 
         auto result = game.split();
@@ -421,13 +422,13 @@ TEST_CASE("State integrity - AC-10", "[game]") {
 TEST_CASE("Full round flow - AC-11", "[game]") {
     SECTION("deal -> stand -> play_dealer -> deal again") {
         auto game = make_normal_game();
-        (void)game.deal();
+        std::ignore = game.deal();
 
         if (game.state() == GameState::PlayerTurn) {
-            (void)game.stand();
+            std::ignore = game.stand();
         }
         if (game.state() == GameState::DealerTurn) {
-            (void)game.play_dealer();
+            std::ignore = game.play_dealer();
         }
         REQUIRE(game.state() == GameState::RoundOver);
 
@@ -440,17 +441,17 @@ TEST_CASE("Split aces 21 is Win not Blackjack - AC-12", "[game]") {
     bool found = false;
     for (uint32_t seed = 1; seed < 100000; seed++) {
         Game game(seed);
-        (void)game.deal();
+        std::ignore = game.deal();
         if (game.state() != GameState::PlayerTurn) continue;
 
         auto hands = game.player_hands();
         if (!hands[0].hand.can_split()) continue;
         if (hands[0].hand.cards()[0].rank != Rank::Ace) continue;
 
-        (void)game.split();
+        std::ignore = game.split();
         if (game.state() != GameState::DealerTurn) continue;
 
-        (void)game.play_dealer();
+        std::ignore = game.play_dealer();
         hands = game.player_hands();
 
         for (const auto& hs : hands) {
@@ -469,7 +470,7 @@ TEST_CASE("Dealer natural vs non-natural - AC-12b", "[game]") {
     bool found = false;
     for (uint32_t seed = 1; seed < 100000; seed++) {
         Game game(seed);
-        (void)game.deal();
+        std::ignore = game.deal();
 
         auto hands = game.player_hands();
         if (hands.empty()) continue;
@@ -478,7 +479,7 @@ TEST_CASE("Dealer natural vs non-natural - AC-12b", "[game]") {
             !hands[0].hand.is_natural_blackjack()) {
             // Natural blackjack on dealer should have advanced past PlayerTurn
             if (game.state() == GameState::DealerTurn) {
-                (void)game.play_dealer();
+                std::ignore = game.play_dealer();
             }
             hands = game.player_hands();
             REQUIRE(hands[0].result == HandResult::Lose);
@@ -494,7 +495,7 @@ TEST_CASE("Available actions - AC-13", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 100000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
             if (!game.player_hands()[0].hand.can_split()) continue;
 
@@ -518,7 +519,7 @@ TEST_CASE("Available actions - AC-13", "[game]") {
         bool found = false;
         for (uint32_t seed = 1; seed < 10000; seed++) {
             Game game(seed);
-            (void)game.deal();
+            std::ignore = game.deal();
             if (game.state() != GameState::PlayerTurn) continue;
             if (game.player_hands()[0].hand.can_split()) continue;
 
@@ -542,9 +543,9 @@ TEST_CASE("Available actions - AC-13", "[game]") {
         Game game(12345);
         REQUIRE(game.available_actions().empty());
 
-        (void)game.deal();
+        std::ignore = game.deal();
         if (game.state() == GameState::PlayerTurn) {
-            (void)game.stand();
+            std::ignore = game.stand();
             REQUIRE(game.available_actions().empty());
         }
     }
@@ -555,8 +556,8 @@ TEST_CASE("Deterministic seed - AC-14", "[game]") {
         Game game1(42);
         Game game2(42);
 
-        (void)game1.deal();
-        (void)game2.deal();
+        std::ignore = game1.deal();
+        std::ignore = game2.deal();
 
         auto h1 = game1.player_hands();
         auto h2 = game2.player_hands();
@@ -569,8 +570,8 @@ TEST_CASE("Deterministic seed - AC-14", "[game]") {
         REQUIRE(game1.state() == game2.state());
 
         if (game1.state() == GameState::PlayerTurn) {
-            (void)game1.hit();
-            (void)game2.hit();
+            std::ignore = game1.hit();
+            std::ignore = game2.hit();
             h1 = game1.player_hands();
             h2 = game2.player_hands();
             REQUIRE(h1[0].hand.size() == h2[0].hand.size());
@@ -582,23 +583,23 @@ TEST_CASE("Deterministic seed - AC-14", "[game]") {
         Game game1(999);
         Game game2(999);
 
-        (void)game1.deal();
-        (void)game2.deal();
+        std::ignore = game1.deal();
+        std::ignore = game2.deal();
 
         if (game1.state() == GameState::PlayerTurn) {
-            (void)game1.stand();
-            (void)game2.stand();
+            std::ignore = game1.stand();
+            std::ignore = game2.stand();
         }
         if (game1.state() == GameState::DealerTurn) {
-            (void)game1.play_dealer();
-            (void)game2.play_dealer();
+            std::ignore = game1.play_dealer();
+            std::ignore = game2.play_dealer();
         }
 
         REQUIRE(game1.state() == game2.state());
         REQUIRE(game1.player_hands()[0].result == game2.player_hands()[0].result);
 
-        (void)game1.deal();
-        (void)game2.deal();
+        std::ignore = game1.deal();
+        std::ignore = game2.deal();
         REQUIRE(game1.state() == game2.state());
     }
 }
