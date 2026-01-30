@@ -221,3 +221,7 @@ Before submitting your audit:
 - [ ] Recommendations are prioritized and actionable
 - [ ] Verdict is consistent with findings (no PASS with critical vulnerabilities)
 - [ ] Report follows the template exactly
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

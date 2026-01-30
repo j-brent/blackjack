@@ -260,3 +260,7 @@ For project plans:
 - [ ] Always-active agents (test, review, security, etc.) are accounted for
 - [ ] No orphan tasks (every task connects to a spec or infrastructure need)
 - [ ] Risks from design review are carried forward
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

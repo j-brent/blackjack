@@ -227,3 +227,7 @@ Before presenting go/no-go:
 - [ ] Go/no-go summary includes audit verdict, defects, tests, security status
 - [ ] Git tag is prepared (annotated, correct commit)
 - [ ] Release notes follow the template exactly
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

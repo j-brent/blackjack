@@ -205,3 +205,7 @@ Before reporting documentation as complete:
 - [ ] No hardcoded values that will become stale
 - [ ] All cross-references and links are valid
 - [ ] Consistent formatting and style across all documents
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

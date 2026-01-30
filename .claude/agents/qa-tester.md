@@ -177,3 +177,7 @@ Before reporting testing as complete:
 - [ ] All defect reports include exact reproduction steps, expected vs. actual, and evidence
 - [ ] Severity is calibrated accurately
 - [ ] Results summary is ready for PM
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

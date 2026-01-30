@@ -227,3 +227,7 @@ Before submitting your audit:
 - [ ] Verdict is logically consistent with findings
 - [ ] Report follows the template exactly
 - [ ] Evidence is cited for every assertion (no "assumed" or "probably")
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

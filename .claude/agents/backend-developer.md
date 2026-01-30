@@ -139,3 +139,7 @@ When assigned a task:
 - [ ] No TODO comments without a linked spec or defect ID
 - [ ] Commits follow git workflow format
 - [ ] Existing tests still pass
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

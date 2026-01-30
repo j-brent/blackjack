@@ -184,3 +184,7 @@ For git workflow:
 - [ ] Review requirements are defined per branch target
 - [ ] Merge strategy is defined per scenario
 - [ ] CI/CD triggers are mapped
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

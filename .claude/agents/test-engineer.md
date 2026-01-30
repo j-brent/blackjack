@@ -216,3 +216,7 @@ For test implementation:
 - [ ] Test code follows coding standards
 - [ ] Commits follow git workflow
 - [ ] All defects are filed with complete reproduction steps
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

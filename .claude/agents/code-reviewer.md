@@ -181,3 +181,7 @@ Before submitting your review:
 - [ ] Same standard applied regardless of which developer wrote the code
 - [ ] Verdict matches the findings (don't REJECT for minor issues, don't APPROVE with CRITICAL findings)
 - [ ] Report follows the template exactly
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

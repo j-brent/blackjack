@@ -225,3 +225,7 @@ Before reporting work as complete:
 - [ ] Local development setup is documented and works
 - [ ] Pipeline configuration is version-controlled
 - [ ] All configuration follows coding standards
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

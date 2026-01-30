@@ -153,3 +153,7 @@ When assigned a task:
 - [ ] Code follows coding standards exactly
 - [ ] Commits follow git workflow format
 - [ ] Existing tests still pass
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.

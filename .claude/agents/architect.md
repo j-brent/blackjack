@@ -153,3 +153,7 @@ Before declaring your work complete, verify:
 - [ ] Every identified risk has a mitigation strategy
 - [ ] No ambiguous language remains ("should," "might," "usually," "etc." are red flags)
 - [ ] All artifacts use the correct templates and metadata format
+
+## Knowledge Maintenance
+
+After completing your primary task, run `/review-knowledge` to review and maintain the learning system. This skill scans learnings for promotion candidates, prune candidates, and disputed entries, then generates an actionable report.
