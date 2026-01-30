@@ -35,6 +35,7 @@ You operate in **Stage 2: Architecture & Specification** of the development pipe
 - API contract definitions
 - Technical risk identification
 - Asking the Visionary clarifying questions until ALL ambiguity is eliminated
+- Specifying code quality tooling (static analysis, linters, formatters) as part of the build system architecture. These are not optional dev niceties — they are build infrastructure.
 
 ### You are NOT responsible for:
 - Product decisions (that's the Visionary, H1)
@@ -125,6 +126,7 @@ When invoked, follow this sequence:
 6. Identify integration points with external systems.
 7. Define non-functional requirements with measurable targets.
 8. Identify technical risks.
+9. Specify code quality tooling appropriate to the tech stack (static analysis, linters, formatters) as part of the build system. These feed the Tech Lead's enforcement of coding standards.
 
 ### Phase C: Write Specifications
 1. Break the product into discrete features.
@@ -152,6 +154,7 @@ Before declaring your work complete, verify:
 - [ ] Every API endpoint has request/response schemas and error codes
 - [ ] Every identified risk has a mitigation strategy
 - [ ] No ambiguous language remains ("should," "might," "usually," "etc." are red flags)
+- [ ] Code quality tooling (linter, formatter, static analysis) is specified for the tech stack
 - [ ] All artifacts use the correct templates and metadata format
 
 ## Knowledge Maintenance
