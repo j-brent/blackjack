@@ -5,11 +5,11 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/component/event.hpp>
 
-#include <string>
-#include <vector>
-#include <thread>
 #include <chrono>
 #include <functional>
+#include <string>
+#include <thread>
+#include <vector>
 
 using namespace ftxui;
 using namespace blackjack;
@@ -311,8 +311,9 @@ Component build_controls(Game& game, ScreenInteractive& screen, std::function<vo
     if (state == GameState::RoundOver) {
         // New Game and Quit buttons
         auto new_game_btn = Button(" (N)ew Game ", [&]() {
-            (void)game.deal();
-            refresh();
+            if (game.deal() == ActionResult::Success) {
+                refresh();
+            }
         }, ButtonOption::Ascii());
 
         auto quit_btn = Button(" (Q)uit ", [&]() {
@@ -328,8 +329,9 @@ Component build_controls(Game& game, ScreenInteractive& screen, std::function<vo
         auto has_hit = std::find(available.begin(), available.end(), PlayerAction::Hit) != available.end();
         if (has_hit) {
             auto hit_btn = Button(" (H)it ", [&]() {
-                (void)game.hit();
-                refresh();
+                if (game.hit() == ActionResult::Success) {
+                    refresh();
+                }
             }, ButtonOption::Ascii());
             buttons.push_back(hit_btn);
         }
@@ -338,13 +340,14 @@ Component build_controls(Game& game, ScreenInteractive& screen, std::function<vo
         auto has_stand = std::find(available.begin(), available.end(), PlayerAction::Stand) != available.end();
         if (has_stand) {
             auto stand_btn = Button(" (S)tand ", [&]() {
-                (void)game.stand();
+                if (game.stand() != ActionResult::Success) return;
                 refresh();
 
                 // If we're now in DealerTurn, play dealer
                 if (game.state() == GameState::DealerTurn) {
-                    (void)game.play_dealer();
-                    refresh();
+                    if (game.play_dealer() == ActionResult::Success) {
+                        refresh();
+                    }
                 }
             }, ButtonOption::Ascii());
             buttons.push_back(stand_btn);
@@ -354,8 +357,9 @@ Component build_controls(Game& game, ScreenInteractive& screen, std::function<vo
         auto has_split = std::find(available.begin(), available.end(), PlayerAction::Split) != available.end();
         if (has_split) {
             auto split_btn = Button(" S(p)lit ", [&]() {
-                (void)game.split();
-                refresh();
+                if (game.split() == ActionResult::Success) {
+                    refresh();
+                }
             }, ButtonOption::Ascii());
             buttons.push_back(split_btn);
         }
@@ -496,7 +500,9 @@ int main() {
     Game game;
 
     // Auto-deal on launch
-    (void)game.deal();
+    if (game.deal() != ActionResult::Success) {
+        return 1;
+    }
 
     // Create screen
     auto screen = ScreenInteractive::Fullscreen();
@@ -575,26 +581,24 @@ int main() {
 
         if (state == GameState::RoundOver) {
             if (event == Event::Character('n') || event == Event::Character('N')) {
-                (void)game.deal();
-                return true;
+                return game.deal() == ActionResult::Success;
             }
         } else {
             if (event == Event::Character('h') || event == Event::Character('H')) {
                 auto has_hit = std::find(available.begin(), available.end(), PlayerAction::Hit) != available.end();
                 if (has_hit) {
-                    (void)game.hit();
-                    return true;
+                    return game.hit() == ActionResult::Success;
                 }
             }
 
             if (event == Event::Character('s') || event == Event::Character('S')) {
                 auto has_stand = std::find(available.begin(), available.end(), PlayerAction::Stand) != available.end();
                 if (has_stand) {
-                    (void)game.stand();
+                    if (game.stand() != ActionResult::Success) return false;
 
                     // If we're now in DealerTurn, play dealer
                     if (game.state() == GameState::DealerTurn) {
-                        (void)game.play_dealer();
+                        if (game.play_dealer() != ActionResult::Success) return false;
                     }
                     return true;
                 }
@@ -603,8 +607,7 @@ int main() {
             if (event == Event::Character('p') || event == Event::Character('P')) {
                 auto has_split = std::find(available.begin(), available.end(), PlayerAction::Split) != available.end();
                 if (has_split) {
-                    (void)game.split();
-                    return true;
+                    return game.split() == ActionResult::Success;
                 }
             }
         }
