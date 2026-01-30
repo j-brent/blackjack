@@ -51,7 +51,7 @@ ActionResult Game::hit() {
         return ActionResult::InvalidAction;
     }
 
-    hs.hand.add_card(deck_->draw());
+    hs.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
 
     if (hs.hand.is_bust()) {
         hs.is_stood = true;
@@ -98,14 +98,14 @@ ActionResult Game::split() {
     // Replace active hand with first card
     active = HandState{};
     active.hand.add_card(card1);
-    active.hand.add_card(deck_->draw());
+    active.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
     active.is_from_split = true;
     active.is_split_aces = splitting_aces;
 
     // Create second hand — push_back may reallocate, invalidating `active`
     HandState second{};
     second.hand.add_card(card2);
-    second.hand.add_card(deck_->draw());
+    second.hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
     second.is_from_split = true;
     second.is_split_aces = splitting_aces;
     r.player_hands.push_back(std::move(second));
@@ -139,9 +139,9 @@ ActionResult Game::play_dealer() {
 
     if (!all_bust) {
         // Dealer draws: hit on soft 17, stand on hard 17+
-        while (r.dealer_hand.value() < 17 ||
-               (r.dealer_hand.value() == 17 && r.dealer_hand.is_soft())) {
-            r.dealer_hand.add_card(deck_->draw());
+        while (r.dealer_hand.value() < dealer_stand_threshold ||
+               (r.dealer_hand.value() == dealer_stand_threshold && r.dealer_hand.is_soft())) {
+            r.dealer_hand.add_card(deck_->draw()); // NOLINT(bugprone-unchecked-optional-access) — deck_ is always populated during active play
         }
     }
 
@@ -206,6 +206,7 @@ void Game::determine_results() {
     int dealer_val = r.dealer_hand.value();
 
     for (auto& hs : r.player_hands) {
+        // NOLINTNEXTLINE(bugprone-branch-clone) — bust and dealer-natural both yield Lose, but are logically distinct conditions
         if (hs.hand.is_bust()) {
             hs.result = HandResult::Lose;
         } else if (!hs.is_from_split && hs.hand.is_natural_blackjack()) {

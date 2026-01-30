@@ -21,6 +21,7 @@ std::string trim(const std::string& str);
 std::string to_lower(const std::string& str);
 bool play_round(blackjack::Game& game);
 
+// NOLINTNEXTLINE(bugprone-exception-escape) — iostream operations can theoretically throw ios_base::failure; not a real risk in a console app
 int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);

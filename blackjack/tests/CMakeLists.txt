@@ -24,6 +24,11 @@ else()
     target_compile_options(blackjack_tests PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+# clang-tidy is intentionally NOT applied to the test target.
+# Catch2 macros expand to code that triggers false positives
+# (naming conventions, modernize suggestions) in Catch2 internal headers.
+# The library target is already analyzed — that's where the checks matter.
+
 include(CTest)
 include(Catch)
 catch_discover_tests(blackjack_tests)
