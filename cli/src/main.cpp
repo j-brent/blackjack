@@ -3,7 +3,6 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -362,6 +361,14 @@ bool play_round(blackjack::Game& game) {
                     }
                 }
             }
+        } else if (first_char == 'p' || input == "split") {
+            // Split must be checked before stand — "split" starts with 's'
+            // which would otherwise match the stand handler's first_char check
+            result = game.split();
+
+            if (result == blackjack::ActionResult::Success) {
+                display_game_state(game);
+            }
         } else if (first_char == 's' || input == "stand") {
             // Check if this is hand 1 of a split before standing
             auto current_hands = game.player_hands();
@@ -378,12 +385,6 @@ bool play_round(blackjack::Game& game) {
                     std::cout << "\n";
                     display_game_state(game);
                 }
-            }
-        } else if (first_char == 'p' || input == "split") {
-            result = game.split();
-
-            if (result == blackjack::ActionResult::Success) {
-                display_game_state(game);
             }
         } else {
             std::cout << "Invalid command. Options: hit (h), stand (s)";
