@@ -1,7 +1,8 @@
 #pragma once
 #include "blackjack/types.hpp"
-#include <vector>
+
 #include <span>
+#include <vector>
 
 namespace blackjack {
 

@@ -1,12 +1,13 @@
 #pragma once
-#include "blackjack/types.hpp"
-#include "blackjack/hand.hpp"
 #include "blackjack/deck.hpp"
-#include <vector>
-#include <span>
-#include <optional>
+#include "blackjack/hand.hpp"
+#include "blackjack/types.hpp"
+
 #include <cstdint>
+#include <optional>
 #include <random>
+#include <span>
+#include <vector>
 
 namespace blackjack {
 

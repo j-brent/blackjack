@@ -1,8 +1,9 @@
 #pragma once
 #include "blackjack/types.hpp"
-#include <vector>
-#include <random>
+
 #include <algorithm>
+#include <random>
+#include <vector>
 
 namespace blackjack {
 

@@ -1,4 +1,5 @@
 #include "blackjack/game.hpp"
+
 #include <algorithm>
 #include <cctype>
 #include <iostream>
@@ -21,7 +22,8 @@ std::string trim(const std::string& str);
 std::string to_lower(const std::string& str);
 bool play_round(blackjack::Game& game);
 
-// NOLINTNEXTLINE(bugprone-exception-escape) — iostream operations can theoretically throw ios_base::failure; not a real risk in a console app
+// NOLINTNEXTLINE(bugprone-exception-escape) — iostream operations can theoretically throw
+// ios_base::failure; not a real risk in a console app
 int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -47,29 +49,29 @@ int main() {
 
 std::string rank_to_string(blackjack::Rank rank) {
     switch (rank) {
-        case blackjack::Rank::Ace:   return "A";
-        case blackjack::Rank::Two:   return "2";
+        case blackjack::Rank::Ace: return "A";
+        case blackjack::Rank::Two: return "2";
         case blackjack::Rank::Three: return "3";
-        case blackjack::Rank::Four:  return "4";
-        case blackjack::Rank::Five:  return "5";
-        case blackjack::Rank::Six:   return "6";
+        case blackjack::Rank::Four: return "4";
+        case blackjack::Rank::Five: return "5";
+        case blackjack::Rank::Six: return "6";
         case blackjack::Rank::Seven: return "7";
         case blackjack::Rank::Eight: return "8";
-        case blackjack::Rank::Nine:  return "9";
-        case blackjack::Rank::Ten:   return "10";
-        case blackjack::Rank::Jack:  return "J";
+        case blackjack::Rank::Nine: return "9";
+        case blackjack::Rank::Ten: return "10";
+        case blackjack::Rank::Jack: return "J";
         case blackjack::Rank::Queen: return "Q";
-        case blackjack::Rank::King:  return "K";
+        case blackjack::Rank::King: return "K";
     }
     return "?";
 }
 
 std::string suit_to_string(blackjack::Suit suit) {
     switch (suit) {
-        case blackjack::Suit::Spades:   return "\u2660";  // ♠
-        case blackjack::Suit::Hearts:   return "\u2665";  // ♥
-        case blackjack::Suit::Diamonds: return "\u2666";  // ♦
-        case blackjack::Suit::Clubs:    return "\u2663";  // ♣
+        case blackjack::Suit::Spades: return "\u2660";   // ♠
+        case blackjack::Suit::Hearts: return "\u2665";   // ♥
+        case blackjack::Suit::Diamonds: return "\u2666"; // ♦
+        case blackjack::Suit::Clubs: return "\u2663";    // ♣
     }
     return "?";
 }
@@ -141,7 +143,7 @@ void display_game_state(const blackjack::Game& game) {
             bool is_active = (i == game.active_hand_index());
 
             std::cout << "Hand " << (i + 1) << (is_active ? " *:" : "  :");
-            std::cout << "  ";  // Two spaces after label to reach 11 chars total
+            std::cout << "  "; // Two spaces after label to reach 11 chars total
             std::cout << hand_to_string(hand_state.hand);
             std::cout << "\n";
         }
@@ -194,17 +196,10 @@ void display_results(const blackjack::Game& game) {
             } else {
                 switch (hand_state.result) {
                     case blackjack::HandResult::Win:
-                    case blackjack::HandResult::Blackjack:
-                        std::cout << "Win!\n";
-                        break;
-                    case blackjack::HandResult::Lose:
-                        std::cout << "Lose.\n";
-                        break;
-                    case blackjack::HandResult::Push:
-                        std::cout << "Push.\n";
-                        break;
-                    default:
-                        break;
+                    case blackjack::HandResult::Blackjack: std::cout << "Win!\n"; break;
+                    case blackjack::HandResult::Lose: std::cout << "Lose.\n"; break;
+                    case blackjack::HandResult::Push: std::cout << "Push.\n"; break;
+                    default: break;
                 }
             }
         }
@@ -221,17 +216,10 @@ void display_results(const blackjack::Game& game) {
             }
         } else {
             switch (hand_state.result) {
-                case blackjack::HandResult::Win:
-                    std::cout << "You win!\n";
-                    break;
-                case blackjack::HandResult::Lose:
-                    std::cout << "You lose.\n";
-                    break;
-                case blackjack::HandResult::Push:
-                    std::cout << "Push.\n";
-                    break;
-                default:
-                    break;
+                case blackjack::HandResult::Win: std::cout << "You win!\n"; break;
+                case blackjack::HandResult::Lose: std::cout << "You lose.\n"; break;
+                case blackjack::HandResult::Push: std::cout << "Push.\n"; break;
+                default: break;
             }
         }
     }
@@ -240,21 +228,17 @@ void display_results(const blackjack::Game& game) {
 }
 
 std::string trim(const std::string& str) {
-    auto start = std::ranges::find_if_not(str, [](unsigned char ch) {
-        return std::isspace(ch);
-    });
+    auto start = std::ranges::find_if_not(str, [](unsigned char ch) { return std::isspace(ch); });
     auto end = std::ranges::find_if_not(str | std::views::reverse, [](unsigned char ch) {
-        return std::isspace(ch);
-    }).base();
+                   return std::isspace(ch);
+               }).base();
 
     return (start < end) ? std::string(start, end) : std::string();
 }
 
 std::string to_lower(const std::string& str) {
     std::string result = str;
-    std::ranges::transform(result, result.begin(), [](unsigned char c) {
-        return std::tolower(c);
-    });
+    std::ranges::transform(result, result.begin(), [](unsigned char c) { return std::tolower(c); });
     return result;
 }
 
@@ -299,7 +283,7 @@ bool play_round(blackjack::Game& game) {
             std::cout << "\nPlay again? [y/n]: ";
             std::string input;
             if (!std::getline(std::cin, input)) {
-                return false;  // EOF
+                return false; // EOF
             }
 
             input = trim(to_lower(input));
@@ -317,8 +301,8 @@ bool play_round(blackjack::Game& game) {
     while (game.state() == blackjack::GameState::PlayerTurn) {
         // Get available actions
         auto actions = game.available_actions();
-        bool can_split = std::ranges::find(actions,
-                                    blackjack::PlayerAction::Split) != actions.end();
+        bool can_split =
+            std::ranges::find(actions, blackjack::PlayerAction::Split) != actions.end();
 
         // Display prompt
         std::cout << "Actions: [h]it  [s]tand";
@@ -331,7 +315,7 @@ bool play_round(blackjack::Game& game) {
         // Read input
         std::string input;
         if (!std::getline(std::cin, input)) {
-            return false;  // EOF
+            return false; // EOF
         }
 
         input = trim(to_lower(input));
@@ -464,7 +448,7 @@ bool play_round(blackjack::Game& game) {
         std::cout << "\nPlay again? [y/n]: ";
         std::string input;
         if (!std::getline(std::cin, input)) {
-            return false;  // EOF
+            return false; // EOF
         }
 
         input = trim(to_lower(input));
