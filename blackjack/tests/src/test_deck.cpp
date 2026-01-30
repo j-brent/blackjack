@@ -1,7 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include "blackjack/deck.hpp"
-#include <set>
 #include <random>
+#include <set>
+#include <tuple>
 
 using namespace blackjack;
 
@@ -11,7 +12,7 @@ TEST_CASE("Deck initialization", "[deck]") {
         Deck deck(rng);
         int count = 0;
         while (!deck.is_empty()) {
-            (void)deck.draw();
+            std::ignore = deck.draw();
             count++;
         }
         REQUIRE(count == 52);
@@ -56,10 +57,10 @@ TEST_CASE("Deck draw operation", "[deck]") {
         Deck deck(rng);
         REQUIRE(deck.remaining() == 52);
 
-        (void)deck.draw();
+        std::ignore = deck.draw();
         REQUIRE(deck.remaining() == 51);
 
-        (void)deck.draw();
+        std::ignore = deck.draw();
         REQUIRE(deck.remaining() == 50);
     }
 
@@ -69,7 +70,7 @@ TEST_CASE("Deck draw operation", "[deck]") {
 
         for (int i = 0; i < 52; i++) {
             REQUIRE(deck.remaining() == static_cast<std::size_t>(52 - i));
-            (void)deck.draw();
+            std::ignore = deck.draw();
         }
 
         REQUIRE(deck.remaining() == 0);
