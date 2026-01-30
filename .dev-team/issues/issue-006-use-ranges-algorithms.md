@@ -2,9 +2,9 @@
 id: ISSUE-006
 title: Replace iterator-pair std algorithms with std::ranges equivalents
 severity: low
-status: open
+status: resolved
 reported: 2026-01-30
-resolved:
+resolved: 2026-01-30
 assigned-to:
 ---
 
