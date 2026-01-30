@@ -95,7 +95,7 @@ blackjack/
 - **Value semantics**: Prefer value types. Pass by `const&` for types larger than a pointer. Return by value.
 - **RAII**: No manual resource management. Smart pointers if heap allocation is needed (unlikely in this project).
 - **No raw `new`/`delete`**. No raw owning pointers.
-- **No C-style casts**: Use `static_cast`, `const_cast`, `reinterpret_cast` as needed.
+- **No C-style casts**: Use `static_cast`, `const_cast`, `reinterpret_cast` as needed. This includes `(void)expr` — use `std::ignore = expr` (from `<tuple>`) to discard `[[nodiscard]]` return values.
 - **No `#define` for constants**: Use `constexpr`.
 - **Default comparisons**: Use `= default` for `operator==` where applicable (as in `Card`).
 
