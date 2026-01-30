@@ -4,6 +4,10 @@
 #include <algorithm>
 #include <cctype>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 // Forward declarations
 std::string rank_to_string(blackjack::Rank rank);
 std::string suit_to_string(blackjack::Suit suit);
@@ -17,6 +21,10 @@ std::string to_lower(const std::string& str);
 bool play_round(blackjack::Game& game);
 
 int main() {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     blackjack::Game game;
 
     // Print welcome header
