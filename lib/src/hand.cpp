@@ -25,8 +25,8 @@ int Hand::value() const {
         }
     }
 
-    while (aces > 0 && total + 10 <= 21) {
-        total += 10;
+    while (aces > 0 && total + ace_promotion_bonus <= blackjack_value) {
+        total += ace_promotion_bonus;
         --aces;
     }
 
@@ -48,8 +48,8 @@ bool Hand::is_soft() const {
     // We mirror value()'s promotion logic: promote aces greedily, then check
     // if any promotion was applied.
     bool promoted = false;
-    while (aces > 0 && total + 10 <= 21) {
-        total += 10;
+    while (aces > 0 && total + ace_promotion_bonus <= blackjack_value) {
+        total += ace_promotion_bonus;
         --aces;
         promoted = true;
     }
@@ -58,11 +58,11 @@ bool Hand::is_soft() const {
 }
 
 bool Hand::is_bust() const {
-    return value() > 21;
+    return value() > blackjack_value;
 }
 
 bool Hand::is_natural_blackjack() const {
-    return cards_.size() == 2 && value() == 21;
+    return cards_.size() == 2 && value() == blackjack_value;
 }
 
 bool Hand::can_split() const {

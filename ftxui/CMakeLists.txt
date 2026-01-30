@@ -23,3 +23,7 @@ if(MSVC)
 else()
     target_compile_options(blackjack_tui PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+# clang-tidy is intentionally NOT applied to the TUI target.
+# FTXUI headers trigger false positives (exception-escape, use-ranges, etc.)
+# that force disabling checks we want enforced on our own code.
