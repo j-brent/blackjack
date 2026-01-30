@@ -5,10 +5,10 @@
 namespace blackjack {
 
 Deck::Deck(std::mt19937& rng) {
-    cards_.reserve(52);
+    cards_.reserve(cards_per_deck);
 
-    for (int s = 0; s < 4; ++s) {
-        for (int r = 1; r <= 13; ++r) {
+    for (int s = 0; s < suits_per_deck; ++s) {
+        for (int r = 1; r <= ranks_per_suit; ++r) {
             cards_.push_back(Card{
                 static_cast<Rank>(r),
                 static_cast<Suit>(s)

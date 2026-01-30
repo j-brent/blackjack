@@ -4,7 +4,7 @@ namespace blackjack {
 
 int card_value(Rank rank) {
     auto val = static_cast<int>(rank);
-    if (val >= 10) return 10;
+    if (val >= face_card_value) return face_card_value;
     return val;
 }
 
