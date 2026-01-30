@@ -1,0 +1,53 @@
+---
+Checks: >
+  -*,
+  bugprone-*,
+  cppcoreguidelines-*,
+  google-readability-casting,
+  modernize-*,
+  readability-identifier-naming,
+  -modernize-use-designated-initializers,
+  -modernize-use-trailing-return-type,
+
+WarningsAsErrors: '*'
+
+HeaderFilterRegex: 'blackjack/'
+
+CheckOptions:
+  # Namespace: lowercase
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+
+  # Classes, structs, enums: PascalCase
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+
+  # Enum values: PascalCase
+  - key: readability-identifier-naming.EnumConstantCase
+    value: CamelCase
+
+  # Functions and methods: snake_case
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+  - key: readability-identifier-naming.MethodCase
+    value: lower_case
+
+  # Private member variables: snake_case with trailing underscore
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: lower_case
+  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: '_'
+
+  # Public member variables: snake_case (no trailing underscore for POD structs)
+  - key: readability-identifier-naming.PublicMemberCase
+    value: lower_case
+
+  # Local variables and parameters: snake_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case

@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cctype>
 #include <iostream>
+#include <ranges>
 #include <string>
 
 #ifdef _WIN32
@@ -20,6 +21,7 @@ std::string trim(const std::string& str);
 std::string to_lower(const std::string& str);
 bool play_round(blackjack::Game& game);
 
+// NOLINTNEXTLINE(bugprone-exception-escape) — iostream operations can theoretically throw ios_base::failure; not a real risk in a console app
 int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -238,10 +240,10 @@ void display_results(const blackjack::Game& game) {
 }
 
 std::string trim(const std::string& str) {
-    auto start = std::find_if_not(str.begin(), str.end(), [](unsigned char ch) {
+    auto start = std::ranges::find_if_not(str, [](unsigned char ch) {
         return std::isspace(ch);
     });
-    auto end = std::find_if_not(str.rbegin(), str.rend(), [](unsigned char ch) {
+    auto end = std::ranges::find_if_not(std::ranges::reverse_view(str), [](unsigned char ch) {
         return std::isspace(ch);
     }).base();
 
@@ -250,7 +252,7 @@ std::string trim(const std::string& str) {
 
 std::string to_lower(const std::string& str) {
     std::string result = str;
-    std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) {
+    std::ranges::transform(result, result.begin(), [](unsigned char c) {
         return std::tolower(c);
     });
     return result;
@@ -315,8 +317,8 @@ bool play_round(blackjack::Game& game) {
     while (game.state() == blackjack::GameState::PlayerTurn) {
         // Get available actions
         auto actions = game.available_actions();
-        bool can_split = std::find(actions.begin(), actions.end(),
-                                    blackjack::PlayerAction::Split) != actions.end();
+        bool can_split = std::ranges::find(actions,
+                                          blackjack::PlayerAction::Split) != actions.end();
 
         // Display prompt
         std::cout << "Actions: [h]it  [s]tand";

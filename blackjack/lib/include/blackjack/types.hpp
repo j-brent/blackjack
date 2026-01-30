@@ -51,6 +51,15 @@ struct Card {
     bool operator==(const Card& other) const = default;
 };
 
+// Standard blackjack rules constants
+constexpr int face_card_value = 10;
+constexpr int ace_promotion_bonus = 10;
+constexpr int blackjack_value = 21;
+constexpr int dealer_stand_threshold = 17;
+constexpr int suits_per_deck = 4;
+constexpr int ranks_per_suit = 13;
+constexpr int cards_per_deck = suits_per_deck * ranks_per_suit;
+
 [[nodiscard]] int card_value(Rank rank);
 
 } // namespace blackjack

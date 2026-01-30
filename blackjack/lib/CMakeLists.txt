@@ -14,3 +14,7 @@ if(MSVC)
 else()
     target_compile_options(blackjack_lib PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+if(BLACKJACK_CLANG_TIDY_COMMAND)
+    set_target_properties(blackjack_lib PROPERTIES CXX_CLANG_TIDY "${BLACKJACK_CLANG_TIDY_COMMAND}")
+endif()
