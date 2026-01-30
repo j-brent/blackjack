@@ -2,9 +2,9 @@
 id: ISSUE-001
 title: Suit symbols render as mojibake in all Windows terminals
 severity: high
-status: open
+status: resolved
 reported: 2026-01-30
-resolved:
+resolved: 2026-01-30 (commit 6fb1716)
 assigned-to:
 ---
 
