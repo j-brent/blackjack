@@ -79,3 +79,9 @@ Tests require the app to be served at http://localhost:8080.
 - **CSS units** — Spacing/typography use `rem`, card sizes use `em` (scale with container font-size). No `px` in design tokens.
 - **Layout** — `#game-container` uses `height: 100dvh` with flexbox. Dealer/player areas share remaining space via `flex: 1`.
 - **Keyboard shortcuts** — H (hit), S (stand), P (split), N (new game)
+
+## Known Gotchas
+
+- **Embind enums are objects, not integers.** When C++ enums are exposed via Embind, JavaScript receives wrapper objects. Always use `.value` to get the numeric value (e.g., `card.rank.value`, not `card.rank`). Forgetting `.value` produces `[object Object]` in string contexts and silent failures in comparisons.
+- **Emscripten CMake `-s` flags must have no space.** Use `-sMODULARIZE=1`, not `-s MODULARIZE=1`. CMake's `target_link_options` splits on spaces, turning the flag into two separate arguments which causes linker errors.
+- **WASM output directory.** Use `RUNTIME_OUTPUT_DIRECTORY` in `set_target_properties` to place blackjack.js and blackjack.wasm into `app/build/`, not the CMake build dir.
