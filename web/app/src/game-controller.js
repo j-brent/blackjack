@@ -108,8 +108,8 @@ export class GameController {
             for (let j = 0; j < cardsVector.size(); j++) {
                 const card = cardsVector.get(j);
                 cards.push({
-                    rank: card.rank,
-                    suit: card.suit
+                    rank: card.rank.value,
+                    suit: card.suit.value
                 });
             }
             playerHands.push({
@@ -117,7 +117,7 @@ export class GameController {
                 value: hand.value(),
                 isSoft: hand.is_soft(),
                 isBust: hand.is_bust(),
-                result: HandResultNames[handState.result] || 'None',
+                result: HandResultNames[handState.result.value] || 'None',
                 isStood: handState.is_stood,
                 isFromSplit: handState.is_from_split,
                 isSplitAces: handState.is_split_aces
@@ -130,8 +130,8 @@ export class GameController {
         for (let i = 0; i < dealerCardsVector.size(); i++) {
             const card = dealerCardsVector.get(i);
             dealerCards.push({
-                rank: card.rank,
-                suit: card.suit
+                rank: card.rank.value,
+                suit: card.suit.value
             });
         }
 
@@ -139,8 +139,8 @@ export class GameController {
         let dealerUpCard = null;
         if (dealerUpCardOpt.has_value) {
             dealerUpCard = {
-                rank: dealerUpCardOpt.card.rank,
-                suit: dealerUpCardOpt.card.suit
+                rank: dealerUpCardOpt.card.rank.value,
+                suit: dealerUpCardOpt.card.suit.value
             };
         }
 
@@ -148,11 +148,11 @@ export class GameController {
         const availableActions = [];
         for (let i = 0; i < availableActionsVector.size(); i++) {
             const action = availableActionsVector.get(i);
-            availableActions.push(PlayerActionNames[action] || 'Unknown');
+            availableActions.push(PlayerActionNames[action.value] || 'Unknown');
         }
 
         return {
-            state: GameStateNames[state] || 'Unknown',
+            state: GameStateNames[state.value] || 'Unknown',
             playerHands: playerHands,
             activeHandIndex: this.game.active_hand_index(),
             dealerHand: {

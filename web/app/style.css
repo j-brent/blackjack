@@ -21,30 +21,28 @@
     --color-border-active: #4a9eff;
     --color-border-inactive: #555555;
 
-    /* Spacing */
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 12px;
-    --space-lg: 16px;
-    --space-xl: 24px;
-    --space-2xl: 32px;
+    /* Spacing (rem-based) */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 0.75rem;
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
 
-    /* Typography */
+    /* Typography (rem-based) */
     --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --font-size-sm: 14px;
-    --font-size-base: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 24px;
-    --font-size-2xl: 32px;
-    --font-size-3xl: 40px;
-    --font-size-4xl: 48px;
-    --font-size-5xl: 56px;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 2.5rem;
     --font-weight-normal: 400;
     --font-weight-bold: 700;
 
     /* Borders & Shadows */
-    --border-radius-sm: 4px;
-    --border-radius-md: 8px;
+    --border-radius-sm: 0.25rem;
+    --border-radius-md: 0.5rem;
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.5);
@@ -54,11 +52,11 @@
     --transition-normal: 300ms ease-out;
     --transition-slow: 400ms ease-in-out;
 
-    /* Card sizes (mobile default) */
-    --card-width: 80px;
-    --card-height: 112px;
-    --card-rank-size: 20px;
-    --card-suit-size: 40px;
+    /* Card sizes (em-based, scale with card container font-size) */
+    --card-width: 5em;
+    --card-height: 7em;
+    --card-rank-size: 1.25em;
+    --card-suit-size: 2.5em;
 }
 
 /* Base Styles */
@@ -84,14 +82,14 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 100dvh;
     gap: var(--space-lg);
 }
 
 .loading-spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--color-bg-light);
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid var(--color-bg-light);
     border-top-color: var(--color-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -108,7 +106,7 @@ body {
 .error-message {
     font-size: var(--font-size-lg);
     text-align: center;
-    max-width: 400px;
+    max-width: 25rem;
 }
 
 .btn-reload {
@@ -135,20 +133,20 @@ body {
     font-size: var(--font-size-lg);
 }
 
-/* Game Container */
+/* Game Container — fills exactly the viewport */
 #game-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
 }
 
 /* Header */
 #header {
-    position: sticky;
-    top: 0;
+    flex-shrink: 0;
     background-color: var(--color-bg-dark);
     border-bottom: 2px solid var(--color-bg-light);
-    padding: var(--space-md) 0;
+    padding: var(--space-sm) 0;
     z-index: 10;
 }
 
@@ -158,37 +156,39 @@ body {
     text-align: center;
 }
 
-/* Main Content */
+/* Main Content — absorbs remaining space */
 main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: var(--space-lg);
-    gap: var(--space-lg);
+    padding: var(--space-md);
+    gap: var(--space-md);
+    min-height: 0;
 }
 
-/* Dealer and Player Areas */
+/* Dealer and Player Areas — share space equally */
 #dealer-area,
 #player-area {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
-    min-height: 180px;
-    padding: var(--space-md);
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm);
+    min-height: 0;
 }
 
 #dealer-area h2,
 #player-area h2 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     color: var(--color-text-secondary);
-    margin-bottom: var(--space-sm);
 }
 
 /* Card Container */
 .card-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--space-sm);
     justify-content: center;
     max-width: 100%;
@@ -221,13 +221,13 @@ main {
 }
 
 .card-rank-top {
-    top: var(--space-sm);
-    left: var(--space-sm);
+    top: var(--space-xs);
+    left: var(--space-xs);
 }
 
 .card-rank-bottom {
-    bottom: var(--space-sm);
-    right: var(--space-sm);
+    bottom: var(--space-xs);
+    right: var(--space-xs);
     transform: rotate(180deg);
 }
 
@@ -250,9 +250,9 @@ main {
     background-image: repeating-linear-gradient(
         45deg,
         var(--color-card-back),
-        var(--color-card-back) 10px,
-        var(--color-card-back-pattern) 10px,
-        var(--color-card-back-pattern) 20px
+        var(--color-card-back) 0.625rem,
+        var(--color-card-back-pattern) 0.625rem,
+        var(--color-card-back-pattern) 1.25rem
     );
     justify-content: center;
     align-items: center;
@@ -260,16 +260,15 @@ main {
 
 .card.face-down::before {
     content: '??';
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-2xl);
     color: var(--color-text-primary);
     font-weight: var(--font-weight-bold);
 }
 
 /* Hand Value Display */
 .value {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     font-weight: var(--font-weight-bold);
-    margin-top: var(--space-sm);
 }
 
 .value.bust {
@@ -278,21 +277,26 @@ main {
 
 /* Split Layout */
 #player-area-split {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
-    padding: var(--space-md);
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    min-height: 0;
 }
 
 .hand-container {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-md);
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm);
     border: 1px solid var(--color-border-inactive);
     border-radius: var(--border-radius-md);
     transition: border var(--transition-fast);
+    min-height: 0;
 }
 
 .hand-container.active {
@@ -300,22 +304,24 @@ main {
 }
 
 .hand-container h3 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     color: var(--color-text-secondary);
 }
 
-/* Actions */
+/* Actions — always horizontal */
 #actions {
+    flex-shrink: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
     gap: var(--space-md);
-    padding: var(--space-lg);
+    padding: var(--space-md);
 }
 
 button {
-    min-width: 140px;
-    height: 48px;
+    min-width: 7rem;
+    height: 2.75rem;
     padding: 0 var(--space-md);
     font-family: var(--font-family-base);
     font-size: var(--font-size-base);
@@ -349,15 +355,14 @@ button:disabled {
 
 /* Status Bar */
 #status-bar {
-    position: sticky;
-    bottom: 0;
+    flex-shrink: 0;
     background-color: #222222;
     border-top: 1px solid var(--color-bg-light);
-    padding: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
 }
 
 #status-message {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     text-align: left;
 }
 
@@ -377,7 +382,7 @@ button:disabled {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-0.625rem);
     }
     to {
         opacity: 1;
@@ -407,20 +412,8 @@ button:disabled {
 
 /* Tablet Breakpoint (640px - 1023px) */
 @media (min-width: 640px) {
-    :root {
-        --card-width: 100px;
-        --card-height: 140px;
-        --card-rank-size: 24px;
-        --card-suit-size: 48px;
-    }
-
-    #header h1 {
-        font-size: var(--font-size-2xl);
-    }
-
-    #dealer-area,
-    #player-area {
-        min-height: 200px;
+    .card-container {
+        font-size: 1.25rem;
     }
 
     #player-area-split {
@@ -429,28 +422,19 @@ button:disabled {
     }
 
     .hand-container {
-        flex: 1;
-        max-width: 400px;
+        max-width: 25rem;
     }
 
     #actions {
-        flex-direction: row;
-        justify-content: center;
         gap: var(--space-lg);
-    }
-
-    button {
-        width: auto;
     }
 }
 
 /* Desktop Breakpoint (1024px+) */
 @media (min-width: 1024px) {
-    :root {
-        --card-width: 120px;
-        --card-height: 168px;
-        --card-rank-size: 28px;
-        --card-suit-size: 56px;
+    .card-container {
+        font-size: 1.5rem;
+        gap: var(--space-md);
     }
 
     #header h1 {
@@ -458,17 +442,9 @@ button:disabled {
     }
 
     main {
-        max-width: 1200px;
+        max-width: 75rem;
         margin: 0 auto;
-    }
-
-    #dealer-area,
-    #player-area {
-        min-height: 240px;
-    }
-
-    .card-container {
-        gap: var(--space-md);
+        gap: var(--space-lg);
     }
 
     .card:hover {
@@ -484,24 +460,27 @@ button:disabled {
     }
 
     button {
-        min-width: 140px;
+        min-width: 8.75rem;
     }
 }
 
 /* Very Small Screens (<360px) */
 @media (max-width: 359px) {
-    :root {
-        --card-width: 70px;
-        --card-height: 98px;
-        --card-rank-size: 18px;
-        --card-suit-size: 36px;
+    .card-container {
+        font-size: 0.875rem;
     }
 
     #header h1 {
-        font-size: 24px;
+        font-size: 1.5rem;
     }
 
     #status-message {
+        font-size: var(--font-size-sm);
+    }
+
+    button {
+        min-width: 5rem;
+        height: 2.5rem;
         font-size: var(--font-size-sm);
     }
 }
