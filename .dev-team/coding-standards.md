@@ -165,3 +165,35 @@ blackjack/
       $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
   )
   ```
+
+---
+
+## Web Frontend Standards (STD-002)
+
+### CSS
+
+- **Units**: `rem` for spacing, typography, border-radius. `em` for component-internal scaling (e.g., card dimensions that scale with container font-size). `px` only for borders, box-shadows, and outlines.
+- **Viewport**: Use `dvh`/`dvw` (dynamic viewport units) for full-screen layouts, not `vh`/`vw`.
+- **Layout**: Flexbox with `min-height: 0` on flex children. No fixed `min-height` in pixels on layout sections.
+- **Design tokens**: Define all spacing, colors, typography, and sizing as CSS custom properties in `:root`. No magic numbers in component styles.
+
+### JavaScript
+
+- **ES modules**: Use `import`/`export` in browser code. CommonJS (`require`) only for Node.js tooling (tests, build scripts).
+- **No frameworks**: Vanilla JS unless the spec explicitly requires a framework.
+- **Embind interop**: Always access `.value` on Embind enum objects. Document enum mappings in the consuming module.
+
+### Project Structure
+
+- Servable content in `app/` subdirectory (HTTP server root)
+- JS source in `app/src/`
+- Native bindings source in `cpp/`
+- WASM build output in `app/build/`
+- Tests in `tests/` (outside servable directory)
+
+### Testing
+
+- Playwright for acceptance and layout tests.
+- Test at minimum viewport: 360x640.
+- Test at 200% zoom for accessibility.
+- No `px` in design token CSS custom properties (enforce via test).

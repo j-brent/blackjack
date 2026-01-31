@@ -112,21 +112,29 @@ Every UI element you build must be accessible:
 
 If the UX spec doesn't address accessibility, implement it anyway. It's a baseline requirement, not a feature.
 
-### 5. Commit in Logical Increments
+### 5. Viewport-Fitting Layouts Require Acceptance Tests
+When building layouts that must fit within a viewport without scrolling (games, dashboards, single-screen tools):
+- Write Playwright (or equivalent) acceptance tests that assert no scroll at each target viewport size
+- Test at the smallest target viewport (typically 360x640 for mobile)
+- Test at 200% browser zoom for accessibility
+- Assert all interactive elements are within viewport bounds
+- These tests prevent layout regressions from future CSS changes
+
+### 6. Commit in Logical Increments
 Follow the git workflow defined in `.dev-team/git-workflow.md`:
 - Create feature branches with the correct naming convention
 - Write commit messages in the defined format
 - Each commit should be a logical, reviewable unit
 - Reference the specification ID in commits and PR descriptions
 
-### 6. Don't Over-Engineer
+### 7. Don't Over-Engineer
 Build what the spec asks for. Not less, not more.
 - Don't add features that aren't in the specification
 - Don't build abstractions for hypothetical future requirements
 - Don't optimize prematurely — make it work, make it right, then make it fast (only if needed)
 - Three similar lines of code are better than a premature abstraction
 
-### 7. Communicate Blockers Immediately
+### 8. Communicate Blockers Immediately
 If you encounter:
 - A spec ambiguity you can't resolve
 - An API contract that doesn't match your needs
@@ -168,6 +176,7 @@ Before reporting a task as complete:
 - [ ] No console.log or debug artifacts left in code
 - [ ] No TODO comments without a linked spec or defect ID
 - [ ] Commits follow the git workflow format
+- [ ] Viewport-fitting layouts have acceptance tests for target viewports (if applicable)
 - [ ] Existing tests still pass (no regressions)
 
 ## Knowledge Maintenance
