@@ -6,15 +6,15 @@ void Hand::add_card(Card card) {
     cards_.push_back(card);
 }
 
-std::span<const Card> Hand::cards() const {
+std::span<const Card> Hand::cards() const noexcept {
     return cards_;
 }
 
-std::size_t Hand::size() const {
+std::size_t Hand::size() const noexcept {
     return cards_.size();
 }
 
-int Hand::value() const {
+int Hand::value() const noexcept {
     int total = 0;
     int aces = 0;
 
@@ -33,7 +33,7 @@ int Hand::value() const {
     return total;
 }
 
-bool Hand::is_soft() const {
+bool Hand::is_soft() const noexcept {
     int total = 0;
     int aces = 0;
 
@@ -57,15 +57,15 @@ bool Hand::is_soft() const {
     return promoted;
 }
 
-bool Hand::is_bust() const {
+bool Hand::is_bust() const noexcept {
     return value() > blackjack_value;
 }
 
-bool Hand::is_natural_blackjack() const {
+bool Hand::is_natural_blackjack() const noexcept {
     return cards_.size() == 2 && value() == blackjack_value;
 }
 
-bool Hand::can_split() const {
+bool Hand::can_split() const noexcept {
     return cards_.size() == 2 && cards_[0].rank == cards_[1].rank;
 }
 

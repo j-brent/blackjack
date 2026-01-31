@@ -11,9 +11,9 @@ class Deck {
 public:
     explicit Deck(std::mt19937& rng);
 
-    [[nodiscard]] Card draw();
-    [[nodiscard]] std::size_t remaining() const;
-    [[nodiscard]] bool is_empty() const;
+    [[nodiscard]] Card draw() noexcept;
+    [[nodiscard]] std::size_t remaining() const noexcept;
+    [[nodiscard]] bool is_empty() const noexcept;
 
 private:
     std::vector<Card> cards_;

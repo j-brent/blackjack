@@ -102,7 +102,12 @@ blackjack/
 ## 6. Error Handling
 
 - **Library (`lib/`)**: Commands return `ActionResult` enum. No exceptions thrown from any public method. Invalid operations return an error variant — they never crash, assert, throw, or corrupt state.
-- **Frontends**: May use exceptions for their own I/O errors if appropriate. Must check `ActionResult` from every library command call.
+  - **Compiler enforcement (GCC/Clang)**: The library is compiled with `-fno-exceptions`. Any `throw` statement is a compile error. STL operations that would throw (e.g., `std::bad_alloc` from allocation failure) call `std::terminate()` instead.
+  - **Compiler enforcement (MSVC)**: `-fno-exceptions` has no MSVC equivalent that is safe with the MSVC STL. The no-exceptions policy is enforced by clang-tidy and code review on MSVC builds.
+  - **Static analysis**: clang-tidy checks `bugprone-exception-escape` and `cert-err58-cpp` flag code paths that could throw.
+  - **`noexcept` annotation**: Functions that perform no heap allocation and no system calls are marked `noexcept`. Functions that allocate (e.g., `deal()`, `hit()`, `add_card()`, constructors that build containers) are NOT marked `noexcept`, even though `-fno-exceptions` makes them terminate-on-throw. This keeps the API honest for consumers compiling with exceptions enabled.
+  - **Allocation failure**: The library uses standard library containers (`std::vector`, `std::optional`) that allocate internally. These can theoretically throw `std::bad_alloc`, but this is unrealistic — peak allocation is a 52-element vector of 2-byte structs. Under `-fno-exceptions` (GCC/Clang), allocation failure calls `std::terminate()`. On MSVC (where `-fno-exceptions` is not set), `std::bad_alloc` could propagate to the caller from functions not marked `noexcept`.
+- **Frontends**: May use exceptions for their own I/O errors if appropriate. Must check `ActionResult` from every library command call. Frontends are NOT compiled with `-fno-exceptions`.
 - **Never silently swallow errors**: Every `ActionResult` must be checked or explicitly discarded with a comment explaining why.
 
 ## 7. Logging & I/O Constraints

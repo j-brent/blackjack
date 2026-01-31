@@ -4,7 +4,7 @@ namespace blackjack {
 
 Game::Game() : rng_(std::random_device{}()) {}
 
-Game::Game(uint32_t seed) : rng_(seed) {}
+Game::Game(uint32_t seed) noexcept : rng_(seed) {}
 
 // --- Commands ---
 
@@ -155,33 +155,33 @@ ActionResult Game::play_dealer() {
 
 // --- Queries ---
 
-GameState Game::state() const {
+GameState Game::state() const noexcept {
     return state_;
 }
 
-std::span<const HandState> Game::player_hands() const {
+std::span<const HandState> Game::player_hands() const noexcept {
     if (!round_)
         return {};
     return round_->player_hands;
 }
 
-std::size_t Game::active_hand_index() const {
+std::size_t Game::active_hand_index() const noexcept {
     if (!round_)
         return 0;
     return round_->active_hand_index;
 }
 
-const Hand& Game::dealer_hand() const {
+const Hand& Game::dealer_hand() const noexcept {
     if (!round_)
         return empty_hand_;
     return round_->dealer_hand;
 }
 
-bool Game::is_dealer_hole_card_visible() const {
+bool Game::is_dealer_hole_card_visible() const noexcept {
     return state_ == GameState::DealerTurn || state_ == GameState::RoundOver;
 }
 
-std::optional<Card> Game::dealer_up_card() const {
+std::optional<Card> Game::dealer_up_card() const noexcept {
     if (!round_ || round_->dealer_hand.size() == 0)
         return std::nullopt;
     return round_->dealer_hand.cards()[0];
@@ -207,7 +207,7 @@ std::vector<PlayerAction> Game::available_actions() const {
 
 // --- Private ---
 
-void Game::determine_results() {
+void Game::determine_results() noexcept {
     auto& r = *round_;
     bool dealer_natural = r.dealer_hand.is_natural_blackjack();
     bool dealer_bust = r.dealer_hand.is_bust();
@@ -242,7 +242,7 @@ void Game::determine_results() {
     }
 }
 
-void Game::advance_hand() {
+void Game::advance_hand() noexcept {
     auto& r = *round_;
     // Try to move to the next unplayed hand
     if (r.active_hand_index + 1 < r.player_hands.size()) {

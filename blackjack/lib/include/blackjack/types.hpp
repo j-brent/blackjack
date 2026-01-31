@@ -45,6 +45,6 @@ constexpr int suits_per_deck = 4;
 constexpr int ranks_per_suit = 13;
 constexpr int cards_per_deck = suits_per_deck * ranks_per_suit;
 
-[[nodiscard]] int card_value(Rank rank);
+[[nodiscard]] int card_value(Rank rank) noexcept;
 
 } // namespace blackjack

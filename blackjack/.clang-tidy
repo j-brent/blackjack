@@ -2,6 +2,7 @@
 Checks: >
   -*,
   bugprone-*,
+  cert-err58-cpp,
   cppcoreguidelines-*,
   google-readability-casting,
   modernize-*,

@@ -352,12 +352,28 @@ After `play_dealer()`:
 
 ## 7. Error Handling Contract
 
-- No exceptions are thrown by any public method.
+- No exceptions are thrown intentionally by any public method. The library contains no `throw`, `try`, or `catch` statements and is compiled with `-fno-exceptions` on GCC/Clang. On MSVC, the no-exceptions policy is enforced by clang-tidy and code review (the MSVC STL does not support `-fno-exceptions` safely).
+- **Caveat — implicit `std::bad_alloc`**: Some functions call standard library operations that allocate (`std::vector::push_back`, `std::vector::reserve`, `std::optional::emplace`). These can theoretically throw `std::bad_alloc` on allocation failure. In practice this is unrealistic — the library's peak allocation is a 52-element vector of 2-byte structs. Under `-fno-exceptions` (GCC/Clang, Emscripten), allocation failure calls `std::terminate()` instead of throwing. On MSVC (where `-fno-exceptions` is not set), `std::bad_alloc` could technically propagate to the caller. Functions that perform no allocation are marked `noexcept`; functions that do allocate are deliberately left without `noexcept` to make this distinction visible.
 - Commands return `ActionResult`. The caller checks the return value.
 - Query methods always return valid data. If called in an unexpected state (e.g., `dealer_hand()` when no round is in progress), they return empty/default data — never crash.
 - The library never enters an inconsistent state. Any sequence of calls is safe (though may return `InvalidAction`).
 
-### 7.1 Query Method Behavior in Non-Applicable States
+### 7.1 `noexcept` Contract
+
+Functions marked `noexcept` perform no heap allocation and no system calls. They are safe to call from any context, including `noexcept` callers and WASM.
+
+Functions NOT marked `noexcept` may allocate memory internally. Under `-fno-exceptions` (GCC/Clang), allocation failure calls `std::terminate()`. Under normal compilation (MSVC, or consumers building the library with exceptions enabled), allocation failure would throw `std::bad_alloc`.
+
+| Category | Marked `noexcept` | Examples |
+|----------|-------------------|----------|
+| Pure arithmetic / accessors | Yes | `card_value()`, `value()`, `is_bust()`, `state()`, `remaining()` |
+| Constructors that allocate | No | `Deck(rng)`, `Game()` |
+| Commands that allocate | No | `deal()`, `hit()`, `split()`, `play_dealer()` |
+| Queries returning containers | No | `available_actions()` |
+
+`Game(uint32_t seed)` is the one constructor marked `noexcept` — it constructs only an `mt19937` from a seed, which is deterministic arithmetic with no allocation. The default constructor `Game()` is NOT `noexcept` because it uses `std::random_device{}()`, which may fail if the system entropy source is unavailable.
+
+### 7.2 Query Method Behavior in Non-Applicable States
 
 Query methods are always safe to call. The following table documents return values when called outside their primary intended state:
 
@@ -371,7 +387,7 @@ Query methods are always safe to call. The following table documents return valu
 | `dealer_up_card()`           | `std::nullopt`          | first dealer card     | first dealer card      | first dealer card       |
 | `available_actions()`        | empty vector            | valid actions list    | empty vector           | empty vector            |
 
-### 7.2 Deterministic Seed Contract
+### 7.3 Deterministic Seed Contract
 
 When a `Game` is constructed with a `uint32_t` seed:
 - Two `Game` instances with the same seed, given the same sequence of commands, produce identical game states, card deals, and results.

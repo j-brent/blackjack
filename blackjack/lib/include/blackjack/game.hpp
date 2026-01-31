@@ -22,7 +22,7 @@ struct HandState {
 class Game {
 public:
     Game();
-    explicit Game(uint32_t seed);
+    explicit Game(uint32_t seed) noexcept;
 
     // --- Commands ---
     [[nodiscard]] ActionResult deal();
@@ -32,17 +32,17 @@ public:
     [[nodiscard]] ActionResult play_dealer();
 
     // --- Queries ---
-    [[nodiscard]] GameState state() const;
-    [[nodiscard]] std::span<const HandState> player_hands() const;
-    [[nodiscard]] std::size_t active_hand_index() const;
-    [[nodiscard]] const Hand& dealer_hand() const;
-    [[nodiscard]] bool is_dealer_hole_card_visible() const;
-    [[nodiscard]] std::optional<Card> dealer_up_card() const;
+    [[nodiscard]] GameState state() const noexcept;
+    [[nodiscard]] std::span<const HandState> player_hands() const noexcept;
+    [[nodiscard]] std::size_t active_hand_index() const noexcept;
+    [[nodiscard]] const Hand& dealer_hand() const noexcept;
+    [[nodiscard]] bool is_dealer_hole_card_visible() const noexcept;
+    [[nodiscard]] std::optional<Card> dealer_up_card() const noexcept;
     [[nodiscard]] std::vector<PlayerAction> available_actions() const;
 
 private:
-    void determine_results();
-    void advance_hand();
+    void determine_results() noexcept;
+    void advance_hand() noexcept;
 
     GameState state_ = GameState::WaitingForDeal;
     std::mt19937 rng_;
