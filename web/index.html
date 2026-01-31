@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <noscript>
+        <div class="noscript-message">
+            JavaScript is required to play this game. Please enable JavaScript in your browser.
+        </div>
+    </noscript>
+
+    <div id="loading-state" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading game...</p>
+    </div>
+
+    <div id="error-state" class="error-container" style="display: none;">
+        <p class="error-message">Failed to load game. Please refresh the page.</p>
+        <button id="reload-button" class="btn-reload">Reload</button>
+    </div>
+
+    <div id="game-container" style="display: none;">
+        <header id="header">
+            <h1>BLACKJACK</h1>
+        </header>
+
+        <main>
+            <section id="dealer-area" aria-labelledby="dealer-label">
+                <h2 id="dealer-label">Dealer</h2>
+                <div id="dealer-cards" class="card-container"></div>
+                <p id="dealer-value" class="value" aria-live="polite"></p>
+            </section>
+
+            <section id="player-area" aria-labelledby="player-label">
+                <h2 id="player-label">Your Hand</h2>
+                <div id="player-cards" class="card-container"></div>
+                <p id="player-value" class="value" aria-live="polite"></p>
+            </section>
+
+            <section id="player-area-split" class="split-layout" style="display: none;">
+                <div class="hand-container" data-hand="0">
+                    <h3>Hand 1</h3>
+                    <div class="card-container"></div>
+                    <p class="value" aria-live="polite"></p>
+                </div>
+                <div class="hand-container" data-hand="1">
+                    <h3>Hand 2</h3>
+                    <div class="card-container"></div>
+                    <p class="value" aria-live="polite"></p>
+                </div>
+            </section>
+
+            <div id="actions">
+                <!-- Buttons are dynamically shown/hidden based on game state -->
+            </div>
+        </main>
+
+        <footer id="status-bar">
+            <p id="status-message" role="status" aria-live="polite"></p>
+        </footer>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
