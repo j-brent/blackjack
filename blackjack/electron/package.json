@@ -1,0 +1,42 @@
+{
+  "name": "blackjack-electron",
+  "version": "1.0.0",
+  "description": "Blackjack desktop app (Electron wrapper)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --mac --linux",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.devteam.blackjack",
+    "productName": "Blackjack",
+    "files": [
+      "main.js"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/app",
+        "to": "app",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
