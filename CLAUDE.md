@@ -8,6 +8,7 @@ This repository is a multi-agent software development team. The agents are the p
 .claude/
   agents/           19 agent definitions (architect, frontend-developer, etc.)
   skills/           21 callable skills (invoke agents for specific tasks)
+  learnings/        Accumulated knowledge (by-language, by-domain, by-tool)
 
 .dev-team/
   CLAUDE.md             Project-level instructions (issue workflow, commit conventions)
@@ -36,12 +37,12 @@ After completing any significant task (bug fix, feature, refactor, investigation
 1. **Reflect**: What worked? What failed? What was surprising? What knowledge would have prevented this issue or saved time?
 2. **Classify**: Is the insight project-specific or generalizable?
    - Project-specific → update the relevant `CLAUDE.md` (e.g., `blackjack/web/CLAUDE.md`)
-   - Generalizable → write an entry to `~/.claude/learnings/by-{language,tool,domain}/*.md`
+   - Generalizable → write an entry to `.claude/learnings/by-{language,tool,domain}/*.md`
 3. **Write the entry** using the format defined in `.claude/skills/continuous-learning/SKILL.md`
 4. **Flag structural improvements**: If a coding standard, agent definition, or skill should be updated to prevent recurrence, note it for the user — don't silently move on.
 5. **Then commit**.
 
-The learning files live outside this repo (`~/.claude/learnings/`), so they won't appear in the commit diff — but the reflection and capture must still happen.
+The learning files live in `.claude/learnings/` and will appear in the commit diff alongside the code changes they document.
 
 ### What counts as a learning
 
@@ -62,9 +63,9 @@ Knowledge matures through three levels:
 
 | Location | Maturity | Promotion criteria |
 |----------|----------|--------------------|
-| `~/.claude/learnings/` | Observation | New insight, unvalidated |
-| `~/.claude/skills/` | Technique | High confidence, 5+ validations, 2+ projects |
-| `~/.claude/CLAUDE.md` | Directive | 10+ validations, 3+ projects, user-approved |
+| `.claude/learnings/` | Observation | New insight, unvalidated |
+| `.claude/skills/` | Technique | High confidence, 5+ validations, 2+ projects |
+| `CLAUDE.md` | Directive | 10+ validations, 3+ projects, user-approved |
 
 See `.claude/skills/continuous-learning/SKILL.md` for the full system, entry format, and promotion rules.
 

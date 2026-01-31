@@ -19,8 +19,7 @@ This skill enables agents to learn from their experiences across projects, accum
 ## Knowledge Hierarchy
 
 ```
-~/.claude/
-  CLAUDE.md                 # Core directives (proven, universal, high-signal)
+.claude/
   skills/                   # Stable techniques (validated, actionable)
     debugging.md
     testing.md
@@ -34,6 +33,7 @@ This skill enables agents to learn from their experiences across projects, accum
     general.md
     _archive.md
     _maintenance.log
+CLAUDE.md                   # Core directives (proven, universal, high-signal)
 ```
 
 ### Maturity Levels
@@ -268,14 +268,13 @@ Downgrade confidence if repeated contradictions.
 If the directory structure doesn't exist, create it:
 
 ```bash
-mkdir -p ~/.claude/skills
-mkdir -p ~/.claude/learnings/by-language
-mkdir -p ~/.claude/learnings/by-domain
-mkdir -p ~/.claude/learnings/by-tool
-mkdir -p ~/.claude/commands
-touch ~/.claude/learnings/general.md
-touch ~/.claude/learnings/_archive.md
-touch ~/.claude/learnings/_maintenance.log
+mkdir -p .claude/skills
+mkdir -p .claude/learnings/by-language
+mkdir -p .claude/learnings/by-domain
+mkdir -p .claude/learnings/by-tool
+touch .claude/learnings/general.md
+touch .claude/learnings/_archive.md
+touch .claude/learnings/_maintenance.log
 ```
 
 ---
