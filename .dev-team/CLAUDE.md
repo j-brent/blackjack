@@ -21,6 +21,19 @@
 - Commit messages must reference the issue ID (e.g., `Fix ISSUE-001: ...`).
 - Multiple issues may share a commit only when explicitly requested by the user.
 
+## Git Worktrees
+
+When creating git worktrees for isolated work, place them **outside** the repo as siblings — never inside it. This avoids `.gitignore` pollution and follows standard practice.
+
+```
+dev/
+├── dev-team/                  # main worktree
+├── dev-team-no-exceptions/    # additional worktree (sibling)
+└── dev-team-hotfix/           # another worktree (sibling)
+```
+
+Example: `git worktree add ../dev-team-no-exceptions -b build/no-exceptions master`
+
 ## Pre-Commit Requirements
 
 - **All tests must pass.** Run the project's test suite and verify zero failures before committing.

@@ -25,6 +25,7 @@ blackjack/              First project — C++ game engine + multiple frontends
   cli/                  CLI frontend
   ftxui/                TUI frontend (FTXUI)
   web/                  Browser frontend (Emscripten/WASM)
+  electron/             Desktop frontend (Electron wrapper of web/)
   tests/                Catch2 test suite
 ```
 
@@ -72,10 +73,11 @@ See `.claude/skills/continuous-learning/SKILL.md` for the full system, entry for
 ## Current Projects
 
 ### Blackjack (`blackjack/`)
-C++20 game engine with a clean state-machine API. Frontends drive the game loop; the library is passive (no I/O, no exceptions, returns `ActionResult` enums). Three frontends exist:
+C++20 game engine with a clean state-machine API. Frontends drive the game loop; the library is passive (no I/O, no exceptions, returns `ActionResult` enums). Four frontends exist:
 - **CLI** — Text-based (`blackjack_cli`)
 - **TUI** — Terminal GUI via FTXUI (`blackjack_tui`)
 - **Web** — Vanilla JS + Emscripten WASM (`blackjack/web/`)
+- **Electron** — Desktop app wrapping the web frontend (`blackjack/electron/`)
 
 See `blackjack/CLAUDE.md` for build instructions and C++ conventions.
 See `blackjack/web/CLAUDE.md` for web frontend specifics.

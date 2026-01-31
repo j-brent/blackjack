@@ -18,6 +18,7 @@ cmake --build build
 - `lib/` — Pure logic library (no I/O). Public headers in `lib/include/blackjack/`.
 - `cli/` — CLI frontend (`blackjack_cli`)
 - `ftxui/` — TUI frontend (`blackjack_tui`)
+- `electron/` — Desktop app (Electron wrapper of `web/`). Run with `cd electron && npm start`.
 - `tests/` — Catch2 test suite (`blackjack_tests`)
 
 ## Formatting
