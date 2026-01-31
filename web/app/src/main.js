@@ -108,7 +108,7 @@ function setupEventListeners() {
  */
 function isButtonVisible(buttonId) {
     const button = document.getElementById(buttonId);
-    return button && !button.disabled;
+    return button && !button.hidden && !button.disabled;
 }
 
 /**

@@ -55,8 +55,8 @@
     /* Card sizes (em-based, scale with card container font-size) */
     --card-width: 5em;
     --card-height: 7em;
-    --card-rank-size: 1.25em;
-    --card-suit-size: 2.5em;
+    --card-overlap-visible: 1.5em; /* visible strip per overlapped card (rank+suit corner) */
+    --card-cascade-down: 1em; /* vertical step per card in diagonal cascade */
 }
 
 /* Base Styles */
@@ -189,80 +189,55 @@ main {
 .card-container {
     display: flex;
     flex-wrap: nowrap;
-    gap: var(--space-sm);
-    justify-content: center;
+    align-items: flex-start;
     max-width: 100%;
-    overflow-x: auto;
 }
 
-/* Card Styles */
+/* Card Styles (SVG) */
 .card {
-    position: relative;
     width: var(--card-width);
     height: var(--card-height);
-    background-color: var(--color-card-bg);
-    border: 1px solid #cccccc;
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     flex-shrink: 0;
-    transition: box-shadow var(--transition-fast);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: filter var(--transition-fast);
+}
+
+.card-bg {
+    fill: var(--color-card-bg);
+    stroke: #cccccc;
+    stroke-width: 1;
+}
+
+.card.face-down .card-bg {
+    fill: url(#card-back-stripes);
+    stroke: none;
 }
 
 .card-rank-top,
-.card-rank-bottom {
-    position: absolute;
-    font-size: var(--card-rank-size);
-    font-weight: var(--font-weight-bold);
-    line-height: 1;
-}
-
-.card-rank-top {
-    top: var(--space-xs);
-    left: var(--space-xs);
-}
-
-.card-rank-bottom {
-    bottom: var(--space-xs);
-    right: var(--space-xs);
-    transform: rotate(180deg);
+.card-suit-top,
+.card-rank-bottom,
+.card-suit-bottom {
+    font-weight: 700;
+    font-family: var(--font-family-base);
 }
 
 .card-suit-center {
-    font-size: var(--card-suit-size);
-    line-height: 1;
+    font-family: var(--font-family-base);
 }
 
-.card.red {
-    color: var(--color-card-red);
+.card.red text {
+    fill: var(--color-card-red);
 }
 
-.card.black {
-    color: var(--color-card-black);
+.card.black text {
+    fill: var(--color-card-black);
 }
 
-/* Face-down card */
-.card.face-down {
-    background-color: var(--color-card-back);
-    background-image: repeating-linear-gradient(
-        45deg,
-        var(--color-card-back),
-        var(--color-card-back) 0.625rem,
-        var(--color-card-back-pattern) 0.625rem,
-        var(--color-card-back-pattern) 1.25rem
-    );
-    justify-content: center;
-    align-items: center;
-}
-
-.card.face-down::before {
-    content: '??';
-    font-size: var(--font-size-2xl);
-    color: var(--color-text-primary);
-    font-weight: var(--font-weight-bold);
+/* Face-down card (SVG) */
+.card-back-text {
+    font-weight: 700;
+    font-family: var(--font-family-base);
+    fill: var(--color-text-primary);
 }
 
 /* Hand Value Display */
@@ -279,7 +254,7 @@ main {
 #player-area-split {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--space-sm);
     padding: var(--space-sm);
     min-height: 0;
@@ -417,7 +392,6 @@ button:disabled {
     }
 
     #player-area-split {
-        flex-direction: row;
         justify-content: center;
     }
 
@@ -434,7 +408,6 @@ button:disabled {
 @media (min-width: 1024px) {
     .card-container {
         font-size: 1.5rem;
-        gap: var(--space-md);
     }
 
     #header h1 {
@@ -448,7 +421,7 @@ button:disabled {
     }
 
     .card:hover {
-        box-shadow: var(--shadow-md);
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
     }
 
     #player-area-split {

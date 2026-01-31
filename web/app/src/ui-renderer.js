@@ -21,6 +21,12 @@ export class UIRenderer {
         this.playerAreaSplit = document.getElementById('player-area-split');
         this.actions = document.getElementById('actions');
         this.statusMessage = document.getElementById('status-message');
+
+        // Cache action buttons (static in HTML, toggled via hidden attribute)
+        this.btnHit = document.getElementById('btn-hit');
+        this.btnStand = document.getElementById('btn-stand');
+        this.btnSplit = document.getElementById('btn-split');
+        this.btnNewGame = document.getElementById('btn-new-game');
     }
 
     /**
@@ -42,17 +48,32 @@ export class UIRenderer {
 
         const dealerHand = gameState.dealerHand;
 
-        // Render cards
-        dealerHand.cards.forEach((card, index) => {
+        // Build render order: hole card (index 1) first so it's underneath
+        // in DOM stacking, up card (index 0) second so it's on top, then
+        // any additional hits in natural order.
+        const renderOrder = [];
+        if (dealerHand.cards.length >= 2) {
+            renderOrder.push(1, 0);
+            for (let i = 2; i < dealerHand.cards.length; i++) {
+                renderOrder.push(i);
+            }
+        } else {
+            for (let i = 0; i < dealerHand.cards.length; i++) {
+                renderOrder.push(i);
+            }
+        }
+
+        renderOrder.forEach(index => {
             let cardElement;
             if (index === 1 && !gameState.isDealerHoleCardVisible) {
-                // Second card is the hole card, show face-down if not visible
                 cardElement = createFaceDownCard();
             } else {
-                cardElement = createCardElement(card);
+                cardElement = createCardElement(dealerHand.cards[index]);
             }
             this.dealerCards.appendChild(cardElement);
         });
+
+        this.applyCardOverlap(this.dealerCards);
 
         // Render value
         if (gameState.isDealerHoleCardVisible) {
@@ -112,13 +133,13 @@ export class UIRenderer {
     renderSingleHand(hand) {
         this.playerCards.innerHTML = '';
 
-        // Render cards
         hand.cards.forEach(card => {
             const cardElement = createCardElement(card);
             this.playerCards.appendChild(cardElement);
         });
 
-        // Render value
+        this.applyCardOverlap(this.playerCards);
+
         this.playerValue.textContent = this.formatHandValue(hand);
         this.playerValue.className = hand.isBust ? 'value bust' : 'value';
     }
@@ -141,14 +162,14 @@ export class UIRenderer {
             const cardContainer = container.querySelector('.card-container');
             const valueDisplay = container.querySelector('.value');
 
-            // Clear and render cards
             cardContainer.innerHTML = '';
             hand.cards.forEach(card => {
                 const cardElement = createCardElement(card);
                 cardContainer.appendChild(cardElement);
             });
 
-            // Render value
+            this.applyCardOverlap(cardContainer);
+
             valueDisplay.textContent = this.formatHandValue(hand);
             valueDisplay.className = hand.isBust ? 'value bust' : 'value';
 
@@ -159,6 +180,46 @@ export class UIRenderer {
                 container.classList.remove('active');
             }
         });
+    }
+
+    /**
+     * Apply diagonal cascade overlap to cards in a container.
+     * Each card after the first is offset right (showing only the
+     * top-left rank/suit corner of the card beneath) and down.
+     * The last card is fully visible. Tunable via --card-overlap-visible
+     * and --card-cascade-down.
+     */
+    applyCardOverlap(container) {
+        const cards = container.querySelectorAll('.card');
+        const n = cards.length;
+
+        for (const card of cards) {
+            card.style.marginLeft = '';
+            card.style.marginTop = '';
+        }
+
+        if (n <= 1) return;
+
+        const cardWidth = cards[0].getBoundingClientRect().width;
+        const containerFontSize = parseFloat(getComputedStyle(container).fontSize);
+
+        // Visible strip per overlapped card (--card-overlap-visible, em-based)
+        const overlapEm = parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--card-overlap-visible')
+        ) || 1.5;
+        const overlapVisible = overlapEm * containerFontSize;
+
+        // Vertical step per card (--card-cascade-down, em-based)
+        const cascadeEm = parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--card-cascade-down')
+        ) || 1;
+        const cascadeDown = cascadeEm * containerFontSize;
+
+        const overlap = cardWidth - overlapVisible;
+        for (let i = 1; i < n; i++) {
+            cards[i].style.marginLeft = `-${overlap}px`;
+            cards[i].style.marginTop = `${cascadeDown}px`;
+        }
     }
 
     /**
@@ -176,41 +237,31 @@ export class UIRenderer {
     }
 
     /**
-     * Render action buttons based on available actions.
+     * Render action buttons by toggling visibility.
      */
     renderActions(gameState) {
-        this.actions.innerHTML = '';
-
         const state = gameState.state;
         const availableActions = gameState.availableActions;
 
+        // Hide all buttons first
+        this.btnHit.hidden = true;
+        this.btnStand.hidden = true;
+        this.btnSplit.hidden = true;
+        this.btnNewGame.hidden = true;
+
         if (state === 'PlayerTurn') {
-            // Show Hit, Stand, and Split (if available)
             if (availableActions.includes('Hit')) {
-                this.actions.appendChild(this.createButton('btn-hit', 'Hit (H)', 'hit'));
+                this.btnHit.hidden = false;
             }
             if (availableActions.includes('Stand')) {
-                this.actions.appendChild(this.createButton('btn-stand', 'Stand (S)', 'stand'));
+                this.btnStand.hidden = false;
             }
             if (availableActions.includes('Split')) {
-                this.actions.appendChild(this.createButton('btn-split', 'Split (P)', 'split'));
+                this.btnSplit.hidden = false;
             }
         } else if (state === 'RoundOver') {
-            // Show New Game button
-            this.actions.appendChild(this.createButton('btn-new-game', 'New Game (N)', 'new-game'));
+            this.btnNewGame.hidden = false;
         }
-        // DealerTurn and WaitingForDeal show no buttons
-    }
-
-    /**
-     * Create a button element.
-     */
-    createButton(id, text, action) {
-        const button = document.createElement('button');
-        button.id = id;
-        button.textContent = text;
-        button.dataset.action = action;
-        return button;
     }
 
     /**
