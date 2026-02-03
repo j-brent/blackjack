@@ -15,7 +15,7 @@ dependencies: [VISION-001, ARCH-001, API-001, DATA-001]
 
 Phase 2 adds a web browser frontend to the blackjack project. The existing C++ library (`blackjack_lib`) is compiled to WebAssembly using Emscripten, exposed to JavaScript via Embind, and driven by a vanilla JavaScript single-page application. The web frontend follows the same architectural pattern as CLI and FTXUI: the frontend drives the game loop, the library is passive, and all state transitions are explicit.
 
-The web frontend lives in `blackjack/web/` and produces a self-contained set of static files (HTML, JS, WASM, CSS) that can be opened directly in a browser or served from any static file server.
+The web frontend lives in `web/` and produces a self-contained set of static files (HTML, JS, WASM, CSS) that can be opened directly in a browser or served from any static file server.
 
 ## 2. System Context
 
@@ -203,23 +203,23 @@ The web target uses a separate CMake invocation with the Emscripten toolchain:
 # One-time: ensure Emscripten SDK is installed and activated
 # (emsdk install latest && emsdk activate latest)
 
-# Configure
-emcmake cmake -B blackjack/web/build -S blackjack/web
+# Configure (from projects/blackjack/ directory)
+emcmake cmake -B web/build -S web
 
 # Build
-cmake --build blackjack/web/build
+cmake --build web/build
 
-# Output: blackjack/web/build/blackjack.wasm, blackjack/web/build/blackjack.js
+# Output: web/build/blackjack.wasm, web/build/blackjack.js
 
 # Serve for testing (WASM requires HTTP, not file://)
-emrun blackjack/web/index.html
+emrun web/index.html
 # OR
-python -m http.server -d blackjack/web 8080
+python -m http.server -d web 8080
 ```
 
 ### 6.3 Build Output Placement
 
-The CMake build places `blackjack.wasm` and `blackjack.js` into `blackjack/web/build/`. The `index.html` references these via relative paths. For development, serve from `blackjack/web/`. For distribution, copy `index.html`, `style.css`, `src/*.js`, and `build/blackjack.{js,wasm}` as a flat set of static files.
+The CMake build places `blackjack.wasm` and `blackjack.js` into `web/build/`. The `index.html` references these via relative paths. For development, serve from `web/`. For distribution, copy `index.html`, `style.css`, `src/*.js`, and `build/blackjack.{js,wasm}` as a flat set of static files.
 
 ### 6.4 Why web/ Is NOT a Subdirectory in Root CMakeLists.txt
 
@@ -326,7 +326,7 @@ The web frontend is a set of static files. No server-side logic.
 
 | Environment | Method | Notes |
 |------------|--------|-------|
-| Development | `emrun` or `python -m http.server` from `blackjack/web/` | WASM requires HTTP serving |
+| Development | `emrun` or `python -m http.server` from `web/` | WASM requires HTTP serving |
 | Distribution | Copy static files to any web server or CDN | Zero server configuration needed |
 | Local file | Not supported | Browsers block WASM loading from `file://` URLs |
 

@@ -10,24 +10,48 @@ This repository is a multi-agent software development team. The agents are the p
   skills/           21 callable skills (invoke agents for specific tasks)
   learnings/        Accumulated knowledge (by-language, by-domain, by-tool)
 
-.dev-team/
-  CLAUDE.md             Project-level instructions (issue workflow, commit conventions)
-  coding-standards.md   Coding standards (STD-001 C++, STD-002 Web)
-  git-workflow.md       Branching, commit, and review conventions
-  architecture.md       System architecture (ARCH-001)
-  api-contracts.md      Public API contracts (API-001)
-  specifications/       Feature specifications
-  issues/               Issue tracker (one file per issue)
-  ux/                   UX specifications
-
-blackjack/              First project — C++ game engine + multiple frontends
-  lib/                  Pure logic library (no I/O)
-  cli/                  CLI frontend
-  ftxui/                TUI frontend (FTXUI)
-  web/                  Browser frontend (Emscripten/WASM)
-  electron/             Desktop frontend (Electron wrapper of web/)
-  tests/                Catch2 test suite
+projects/
+  blackjack/        First project — C++ game engine + multiple frontends
+    .dev-team/      Project docs (architecture, specs, issues, coding standards)
+    lib/            Pure logic library (no I/O)
+    cli/            CLI frontend
+    ftxui/          TUI frontend (FTXUI)
+    web/            Browser frontend (Emscripten/WASM)
+    electron/       Desktop frontend (Electron wrapper of web/)
+    tests/          Catch2 test suite
 ```
+
+## Issue Workflow
+
+- Issues are tracked in each project's `.dev-team/issues/` directory.
+- When committing a fix for an issue, **always update the issue file in the same commit**: set `status: resolved`, fill in the `resolved:` date, and note the commit hash if available.
+- Never commit a fix without also resolving the corresponding issue file.
+- An issue stays open until the user explicitly confirms the fix works. Do not mark resolved before user approval.
+
+## Commit Conventions
+
+- **One commit per issue.** Do not batch multiple issue fixes into one commit. This makes fixes easy to revert, review, and trace independently.
+- Commit messages must reference the issue ID (e.g., `Fix ISSUE-001: ...`).
+- Multiple issues may share a commit only when explicitly requested by the user.
+
+## Git Worktrees
+
+When creating git worktrees for isolated work, place them **outside** the repo as siblings — never inside it. This avoids `.gitignore` pollution and follows standard practice.
+
+```
+dev/
+├── dev-team/                  # main worktree
+├── dev-team-no-exceptions/    # additional worktree (sibling)
+└── dev-team-hotfix/           # another worktree (sibling)
+```
+
+Example: `git worktree add ../dev-team-no-exceptions -b build/no-exceptions master`
+
+## Pre-Commit Requirements
+
+- **All tests must pass.** Run the project's test suite and verify zero failures before committing.
+- **Build must be warning-free.**
+- **Auto-format all files that support it.** Run the appropriate formatter (e.g., `clang-format` for C++, `prettier` for JS/TS) before committing. Use the project's formatter configuration if present.
 
 ## Mandatory: Capture Learnings Before Committing
 
@@ -37,7 +61,7 @@ After completing any significant task (bug fix, feature, refactor, investigation
 
 1. **Reflect**: What worked? What failed? What was surprising? What knowledge would have prevented this issue or saved time?
 2. **Classify**: Is the insight project-specific or generalizable?
-   - Project-specific → update the relevant `CLAUDE.md` (e.g., `blackjack/web/CLAUDE.md`)
+   - Project-specific → update the relevant `CLAUDE.md` (e.g., `projects/blackjack/web/CLAUDE.md`)
    - Generalizable → write an entry to `.claude/learnings/by-{language,tool,domain}/*.md`
 3. **Write the entry** using the format defined in `.claude/skills/continuous-learning/SKILL.md`
 4. **Flag structural improvements**: If a coding standard, agent definition, or skill should be updated to prevent recurrence, note it for the user — don't silently move on.
@@ -72,12 +96,12 @@ See `.claude/skills/continuous-learning/SKILL.md` for the full system, entry for
 
 ## Current Projects
 
-### Blackjack (`blackjack/`)
+### Blackjack (`projects/blackjack/`)
 C++20 game engine with a clean state-machine API. Frontends drive the game loop; the library is passive (no I/O, no exceptions, returns `ActionResult` enums). Four frontends exist:
 - **CLI** — Text-based (`blackjack_cli`)
 - **TUI** — Terminal GUI via FTXUI (`blackjack_tui`)
-- **Web** — Vanilla JS + Emscripten WASM (`blackjack/web/`)
-- **Electron** — Desktop app wrapping the web frontend (`blackjack/electron/`)
+- **Web** — Vanilla JS + Emscripten WASM (`projects/blackjack/web/`)
+- **Electron** — Desktop app wrapping the web frontend (`projects/blackjack/electron/`)
 
-See `blackjack/CLAUDE.md` for build instructions and C++ conventions.
-See `blackjack/web/CLAUDE.md` for web frontend specifics.
+See `projects/blackjack/CLAUDE.md` for build instructions and C++ conventions.
+See `projects/blackjack/web/CLAUDE.md` for web frontend specifics.
