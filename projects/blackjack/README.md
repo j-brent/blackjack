@@ -57,15 +57,15 @@ Commands return `ActionResult::Success` or an error variant (`InvalidAction`, `I
 
 ## Error handling
 
-The library is compiled with `-fno-exceptions` on GCC/Clang. Functions that perform no heap allocation are marked `noexcept`. See the [API contracts](../.dev-team/api-contracts.md#7-error-handling-contract) for the full `noexcept` contract and allocation failure behavior.
+The library is compiled with `-fno-exceptions` on GCC/Clang. Functions that perform no heap allocation are marked `noexcept`. See the [API contracts](.dev-team/api-contracts.md#7-error-handling-contract) for the full `noexcept` contract and allocation failure behavior.
 
 ## Formatting
 
 A pre-commit hook auto-formats staged C++ files. Configure once per clone:
 
 ```sh
-git config core.hooksPath blackjack/.githooks
-git config blame.ignoreRevsFile blackjack/.git-blame-ignore-revs
+git config core.hooksPath projects/blackjack/.githooks
+git config blame.ignoreRevsFile projects/blackjack/.git-blame-ignore-revs
 ```
 
 ## Static analysis

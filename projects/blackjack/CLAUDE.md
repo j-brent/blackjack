@@ -28,6 +28,6 @@ Run `clang-format` on all `.cpp` and `.hpp` files before committing. Use the pro
 A pre-commit hook auto-formats staged C++ files. Configure once per clone:
 
 ```sh
-git config core.hooksPath blackjack/.githooks
-git config blame.ignoreRevsFile blackjack/.git-blame-ignore-revs
+git config core.hooksPath projects/blackjack/.githooks
+git config blame.ignoreRevsFile projects/blackjack/.git-blame-ignore-revs
 ```

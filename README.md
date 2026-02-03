@@ -16,7 +16,7 @@ Agents accumulate knowledge as they work. Learnings are captured in `.claude/lea
 
 ## Projects
 
-- **[Blackjack](blackjack/)** — C++20 game engine with four frontends (CLI, TUI, Web/WASM, Electron), demonstrating shared-library architecture where a passive state machine drives multiple UI targets.
+- **[Blackjack](projects/blackjack/)** — C++20 game engine with four frontends (CLI, TUI, Web/WASM, Electron), demonstrating shared-library architecture where a passive state machine drives multiple UI targets.
 
 ## Repository Structure
 
@@ -26,17 +26,17 @@ Agents accumulate knowledge as they work. Learnings are captured in `.claude/lea
   skills/       21 callable skills
   learnings/    Accumulated knowledge (by-language, by-domain, by-tool)
 
-.dev-team/
-  architecture.md       System architecture
-  api-contracts.md      Public API contracts
-  coding-standards.md   C++ and web coding standards
-  git-workflow.md       Branching and commit conventions
-  specifications/       Feature specifications
-  issues/               Issue tracker
-  ux/                   UX specifications
+projects/
+  blackjack/    C++ game engine + frontends
+    .dev-team/  Project docs (architecture, specs, issues, standards)
+    lib/        Pure logic library
+    cli/        CLI frontend
+    ftxui/      TUI frontend
+    web/        Browser frontend (Emscripten/WASM)
+    electron/   Desktop frontend
+    tests/      Catch2 test suite
 
-blackjack/              C++ game engine + frontends
-docs/                   Process documentation and templates
+docs/           Process documentation and templates
 ```
 
 ## Agents
