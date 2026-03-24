@@ -1,64 +1,80 @@
-# Dev Team
+# Blackjack
 
-A multi-agent software development team built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Nineteen specialized agents — architect, frontend developer, security analyst, tech lead, and more — collaborate through a structured pipeline to build real software. The agents are the product; working code is the vehicle for learning.
+C++20 blackjack game engine with four frontends, built as a shared-library architecture exercise.
 
-## How It Works
+> Originally built by [dev-team](https://github.com/j-brent/dev-team), a multi-agent software development system built on Claude Code.
 
-Each agent has a defined role (`.claude/agents/`), an invocable skill (`.claude/skills/`), and access to the full codebase. A project manager agent orchestrates work across a multi-stage pipeline: ideation, architecture, engineering standards, design review, implementation, testing, security review, documentation, audit, and release.
+## Architecture
 
-Agents accumulate knowledge as they work. Learnings are captured in `.claude/learnings/` and mature through three levels:
-
-| Location | Maturity | Promotion criteria |
-|----------|----------|-------------------|
-| `.claude/learnings/` | Observation | New insight, unvalidated |
-| `.claude/skills/` | Technique | High confidence, 5+ validations, 2+ projects |
-| `CLAUDE.md` | Directive | 10+ validations, 3+ projects, user-approved |
-
-## Projects
-
-- **[Blackjack](projects/blackjack/)** — C++20 game engine with four frontends (CLI, TUI, Web/WASM, Electron), demonstrating shared-library architecture where a passive state machine drives multiple UI targets.
-
-## Repository Structure
+The library (`blackjack/`) is a passive state machine with no I/O, no exceptions, and no callbacks. It exposes commands (`deal`, `hit`, `stand`, `split`, `play_dealer`) that return `ActionResult` enums and query methods that return current state. Frontends drive the game loop.
 
 ```
-.claude/
-  agents/       19 agent definitions
-  skills/       21 callable skills
-  learnings/    Accumulated knowledge (by-language, by-domain, by-tool)
-
-projects/
-  blackjack/    C++ game engine + frontends
-    .dev-team/  Project docs (architecture, specs, issues, standards)
-    lib/        Pure logic library
-    cli/        CLI frontend
-    ftxui/      TUI frontend
-    web/        Browser frontend (Emscripten/WASM)
-    electron/   Desktop frontend
-    tests/      Catch2 test suite
-
-docs/           Process documentation and templates
+blackjack/      Pure logic library — headers and sources together (P1204 style)
+apps/
+├── cli/        Text-based CLI frontend
+├── ftxui/      Terminal UI frontend (FTXUI)
+├── web/        Browser frontend (Emscripten/WASM + vanilla JS)
+└── electron/   Desktop app (Electron wrapper of web/)
+tests/          Catch2 test suite (353 assertions, 22 test cases)
 ```
 
-## Agents
+## Build
 
-| Agent | Role |
-|-------|------|
-| Architect | System design, specifications, data models, API contracts |
-| Backend Developer | APIs, business logic, services |
-| Code Reviewer | Standards compliance, correctness, review reports |
-| DevOps Engineer | CI/CD pipelines, build systems, deployment |
-| Frontend Developer | UI components, client-side logic, accessibility |
-| Infrastructure Developer | IaC, cloud config, containerization |
-| Project Manager | Orchestration, planning, pipeline advancement |
-| QA Tester | Behavioral and exploratory testing |
-| Release Manager | Versioning, changelogs, release notes |
-| Security Analyst | Threat modeling, OWASP review, vulnerability analysis |
-| Strategic Advisor | Market, user, and business perspective critic |
-| Tech Lead | Coding standards, git workflow, technical decisions |
-| Technical Writer | API references, user guides, runbooks |
-| Test Engineer | Test strategy, automated test suites |
-| UX Designer | User flows, screen layouts, interaction specs |
-| Auditor | Pre-release compliance and traceability audit |
-| Database Developer | Schemas, migrations, data access layers |
-| Dependency Manager | Vulnerability and license auditing of third-party packages |
-| Mobile Developer | iOS, Android, cross-platform mobile apps |
+Requires CMake 3.20+, a C++20 compiler (GCC 12+, Clang 15+, or MSVC 2022), and Ninja.
+
+```sh
+cmake -B build -S . -G Ninja
+cmake --build build
+./build/tests/blackjack_tests.exe
+```
+
+### Frontends
+
+The web and Electron frontends build and run separately from the main CMake project. See [docs/frontends.md](docs/frontends.md) for build instructions, source layouts, and architecture notes for all four frontends.
+
+## API
+
+All types live in the `blackjack` namespace. The primary interface is the `Game` class.
+
+```cpp
+blackjack::Game game;       // random seed
+blackjack::Game game(42);   // deterministic seed (for testing)
+
+game.deal();
+
+while (game.state() == blackjack::GameState::PlayerTurn) {
+    auto actions = game.available_actions();
+    // ... render, get player choice ...
+    game.hit();   // or game.stand(), game.split()
+}
+
+game.play_dealer();
+
+for (const auto& hs : game.player_hands()) {
+    // hs.result is Win, Lose, Push, or Blackjack
+}
+```
+
+Commands return `ActionResult::Success` or an error variant (`InvalidAction`, `InvalidSplit`, `AlreadySplit`). Query methods are always safe to call in any state.
+
+## Error handling
+
+The library is compiled with `-fno-exceptions` on GCC/Clang. Functions that perform no heap allocation are marked `noexcept`. All commands return `ActionResult` enums; no exceptions are thrown.
+
+## Formatting
+
+A pre-commit hook auto-formats staged C++ files. Configure once per clone:
+
+```sh
+git config core.hooksPath .githooks
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
+## Static analysis
+
+clang-tidy is opt-in:
+
+```sh
+cmake -B build -S . -G Ninja -DBLACKJACK_CLANG_TIDY=ON
+cmake --build build
+```
