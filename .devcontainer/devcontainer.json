@@ -1,0 +1,16 @@
+{
+  "name": "Blackjack C++",
+  "image": "mcr.microsoft.com/devcontainers/cpp:1-debian-12",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.cmake-tools"
+      ]
+    }
+  }
+}
