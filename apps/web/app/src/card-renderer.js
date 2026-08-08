@@ -28,8 +28,13 @@ function getCardTokens() {
         suitSize: read('--card-suit-size', '56'),
         suitCenterSize: read('--card-suit-center-size', '120'),
         backMarkSize: read('--card-back-mark-size', '48'),
-        // CSS string value — strip the surrounding quotes.
-        backMark: read('--card-back-mark', '??').replace(/^["']|["']$/g, '')
+        // CSS string value. Custom properties reach us unparsed, so strip the
+        // quotes and decode any unicode escape ("\2660" would otherwise be
+        // drawn on the card literally).
+        backMark: read('--card-back-mark', '??')
+            .replace(/^["']|["']$/g, '')
+            .replace(/\\([0-9a-fA-F]{1,6})\s?/g,
+                (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
     };
     cardTokensTheme = theme;
     return cardTokens;

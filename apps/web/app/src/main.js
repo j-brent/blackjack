@@ -5,6 +5,7 @@
 import createModule from '../build/blackjack.js';
 import { GameController } from './game-controller.js';
 import { UIRenderer } from './ui-renderer.js';
+import { setupThemePicker } from './theme.js';
 
 let gameController = null;
 let uiRenderer = null;
@@ -44,6 +45,8 @@ async function init() {
  * Setup event listeners for buttons and keyboard shortcuts.
  */
 function setupEventListeners() {
+    setupThemePicker();
+
     // Reload button in error state
     const reloadButton = document.getElementById('reload-button');
     if (reloadButton) {
@@ -65,8 +68,11 @@ function setupEventListeners() {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (event) => {
-        // Ignore if processing or if typing in an input (if any were added later)
-        if (isProcessing || event.target.tagName === 'INPUT') {
+        // Ignore if processing, if typing in an input (if any were added
+        // later), or while the theme picker has focus — otherwise H/S/P/N
+        // would play the hand from inside the menu.
+        if (isProcessing || event.target.tagName === 'INPUT' ||
+            event.target.closest('#theme-picker')) {
             return;
         }
 

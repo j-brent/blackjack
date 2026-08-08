@@ -370,8 +370,16 @@ export class UIRenderer {
 
     /**
      * Focus on a specific button if it exists.
+     *
+     * Skipped while the theme menu is open — the deal-time focus timer
+     * would otherwise pull focus out of the menu mid-selection.
      */
     focusButton(buttonId) {
+        const themeMenu = document.getElementById('theme-menu');
+        if (themeMenu && !themeMenu.hidden) {
+            return;
+        }
+
         const button = document.getElementById(buttonId);
         if (button) {
             button.focus();

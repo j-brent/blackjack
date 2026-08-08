@@ -17,9 +17,27 @@ const VIEWPORTS = {
     desktop: { width: 1920, height: 1080 },
 };
 
+// Selectable designs. Every layout guarantee has to hold for all of them,
+// not just whichever is default.
+const THEMES = ['noir-club', 'midnight-tuxedo', 'champagne-playbill', 'monte-carlo-gold'];
+const DEFAULT_THEME = THEMES[0];
+
 async function waitForGameReady(page) {
     await page.waitForSelector('#game-container', { state: 'visible', timeout: 10000 });
     await page.waitForSelector('.card', { state: 'visible', timeout: 10000 });
+}
+
+/**
+ * Load the app with a specific theme applied before first paint.
+ */
+async function gotoWithTheme(page, theme) {
+    await page.goto(BASE_URL);
+    await page.evaluate(t => localStorage.setItem('bj-theme', t), theme);
+    await page.reload();
+    await waitForGameReady(page);
+    await page.waitForFunction(
+        t => document.documentElement.dataset.theme === t, theme, { timeout: 5000 }
+    );
 }
 
 // AT-1: No scroll required at 360x640
@@ -335,3 +353,95 @@ test('AT-10: visual containment at 360x640', async ({ page }) => {
         expect(v, v.join('\n')).toHaveLength(0);
     }
 });
+
+// AT-11: every theme fits the smallest viewport without scrolling.
+for (const theme of THEMES) {
+    test(`AT-11 [${theme}]: fits 360x640 without scroll`, async ({ page }) => {
+        await page.setViewportSize(VIEWPORTS.smallAndroid);
+        await gotoWithTheme(page, theme);
+
+        const overflow = await page.evaluate(() => ({
+            v: document.documentElement.scrollHeight - window.innerHeight,
+            h: document.documentElement.scrollWidth - window.innerWidth,
+        }));
+        expect(overflow.v, `${theme} scrolls vertically`).toBeLessThanOrEqual(0);
+        expect(overflow.h, `${theme} scrolls horizontally`).toBeLessThanOrEqual(0);
+
+        // Cards must not spill out of their container in any layout.
+        const noHScroll = await page.evaluate(() =>
+            [...document.querySelectorAll('.card-container')]
+                .every(el => el.scrollWidth <= el.clientWidth));
+        expect(noHScroll, `${theme} overflows a card container`).toBe(true);
+    });
+}
+
+// AT-12: every theme keeps the essential elements inside the viewport.
+for (const theme of THEMES) {
+    test(`AT-12 [${theme}]: game elements within viewport at 360x640`, async ({ page }) => {
+        await page.setViewportSize(VIEWPORTS.smallAndroid);
+        await gotoWithTheme(page, theme);
+
+        const { width, height } = VIEWPORTS.smallAndroid;
+        for (const selector of ['#dealer-cards', '#player-cards', '#actions', '#status-bar', '#theme-button']) {
+            const box = await page.locator(selector).boundingBox();
+            expect(box, `${theme}: ${selector} should be visible`).not.toBeNull();
+            expect(box.y + box.height, `${theme}: ${selector} below fold`).toBeLessThanOrEqual(height + 1);
+            expect(box.x + box.width, `${theme}: ${selector} past right edge`).toBeLessThanOrEqual(width + 1);
+        }
+    });
+}
+
+// AT-13: the chosen theme survives a reload and an unknown value falls back.
+test('AT-13: theme persists across reload', async ({ page }) => {
+    await page.goto(BASE_URL);
+    await waitForGameReady(page);
+
+    // Default applies when nothing is stored.
+    await page.evaluate(() => localStorage.removeItem('bj-theme'));
+    await page.reload();
+    await waitForGameReady(page);
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe(DEFAULT_THEME);
+
+    // Picking a theme sticks.
+    await page.click('#theme-button');
+    await page.click('[data-theme="monte-carlo-gold"]');
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('monte-carlo-gold');
+
+    await page.reload();
+    await waitForGameReady(page);
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('monte-carlo-gold');
+    expect(await page.evaluate(() => localStorage.getItem('bj-theme'))).toBe('monte-carlo-gold');
+
+    // A junk value must not leave the page unthemed.
+    await page.evaluate(() => localStorage.setItem('bj-theme', 'not-a-theme'));
+    await page.reload();
+    await waitForGameReady(page);
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe(DEFAULT_THEME);
+});
+
+// AT-14: no theme leaves a token undefined — a missing override would fall
+// back to the classic palette and silently break the design.
+for (const theme of THEMES) {
+    test(`AT-14 [${theme}]: paints from theme tokens`, async ({ page }) => {
+        await gotoWithTheme(page, theme);
+
+        const tokens = await page.evaluate(() => {
+            const cs = getComputedStyle(document.documentElement);
+            const names = [
+                '--bg', '--surface', '--fg', '--muted', '--border', '--accent',
+                '--accent-hover', '--accent-ink', '--danger', '--success', '--warning',
+                '--hint', '--card-face', '--card-ink', '--card-red', '--card-back-mark',
+                '--font-body', '--font-display', '--btn-radius', '--panel-radius',
+            ];
+            const out = {};
+            names.forEach(n => { out[n] = cs.getPropertyValue(n).trim(); });
+            return out;
+        });
+
+        for (const [name, value] of Object.entries(tokens)) {
+            expect(value, `${theme}: ${name} is empty`).not.toBe('');
+        }
+        // The classic blue must not survive into any theme.
+        expect(tokens['--accent'].toLowerCase()).not.toContain('2a7de1');
+    });
+}
