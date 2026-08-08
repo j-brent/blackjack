@@ -60,7 +60,9 @@
 }
 
 [data-theme="noir-club"] .kicker {
-    display: block;
+    /* inline-block so the box hugs the text: a full-width block would sit
+       under the fixed picker even though the centred text does not. */
+    display: inline-block;
     font-size: 0.7rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -263,6 +265,13 @@
     background: var(--border);
 }
 
+/* Split hands keep the display face, but not the fixed label column that
+   the single-hand rows use. */
+[data-theme="midnight-tuxedo"] .hand-container h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+}
+
 /* Seats become label | cards | value rows. */
 [data-theme="midnight-tuxedo"] #dealer-area,
 [data-theme="midnight-tuxedo"] #player-area {
@@ -329,7 +338,9 @@
         align-items: center;
         justify-content: space-between;
         width: auto;
-        padding: var(--space-xs) var(--space-md);
+        /* Right padding clears the fixed theme picker, which would
+           otherwise sit on top of the rail's mark. */
+        padding: var(--space-xs) 3.25rem var(--space-xs) var(--space-md);
         border-right: none;
         border-bottom: 1px solid var(--border);
     }
@@ -408,7 +419,7 @@
 }
 
 [data-theme="champagne-playbill"] .kicker {
-    display: block;
+    display: inline-block;
     font-size: 0.68rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -440,7 +451,8 @@
 }
 
 [data-theme="champagne-playbill"] #dealer-area h2,
-[data-theme="champagne-playbill"] #player-area h2 {
+[data-theme="champagne-playbill"] #player-area h2,
+[data-theme="champagne-playbill"] .hand-container h3 {
     font-family: var(--font-display);
     font-style: italic;
     font-size: 1.05rem;
@@ -523,7 +535,7 @@
 }
 
 [data-theme="monte-carlo-gold"] .kicker {
-    display: block;
+    display: inline-block;
     font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -591,7 +603,8 @@
 }
 
 [data-theme="monte-carlo-gold"] #dealer-area h2,
-[data-theme="monte-carlo-gold"] #player-area h2 {
+[data-theme="monte-carlo-gold"] #player-area h2,
+[data-theme="monte-carlo-gold"] .hand-container h3 {
     font-size: 0.7rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;

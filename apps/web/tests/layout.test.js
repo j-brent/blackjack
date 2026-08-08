@@ -445,3 +445,51 @@ for (const theme of THEMES) {
         expect(tokens['--accent'].toLowerCase()).not.toContain('2a7de1');
     });
 }
+
+// AT-15: the picker is fixed to the viewport corner, so it can collide with
+// whatever chrome a theme puts there. It must not cover any of it.
+for (const theme of THEMES) {
+    for (const [label, size] of [['360x640', VIEWPORTS.smallAndroid], ['480x800', { width: 480, height: 800 }]]) {
+        test(`AT-15 [${theme} @ ${label}]: picker does not overlap chrome`, async ({ page }) => {
+            await page.setViewportSize(size);
+            await gotoWithTheme(page, theme);
+
+            const collisions = await page.evaluate(() => {
+                const btn = document.getElementById('theme-button').getBoundingClientRect();
+                const targets = ['#header h1', '.kicker', '.rail-kicker', '.rail-mark', '.rail-status'];
+
+                // Measure painted text, not the element box: a centred h1 in a
+                // full-width block has a box that reaches under the button
+                // while its glyphs sit nowhere near it.
+                function inkRect(el) {
+                    const hasText = [...el.childNodes]
+                        .some(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+                    if (hasText) {
+                        const range = document.createRange();
+                        range.selectNodeContents(el);
+                        return range.getBoundingClientRect();
+                    }
+                    // Text supplied by ::before — the element box is the ink
+                    // box provided the element is not a full-width block.
+                    return el.getBoundingClientRect();
+                }
+
+                const hits = [];
+                for (const sel of targets) {
+                    const el = document.querySelector(sel);
+                    if (!el) continue;
+                    const cs = getComputedStyle(el);
+                    if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+                    const r = inkRect(el);
+                    if (r.width === 0 || r.height === 0) continue;
+                    const overlaps = !(r.right <= btn.left || r.left >= btn.right ||
+                                       r.bottom <= btn.top || r.top >= btn.bottom);
+                    if (overlaps) hits.push(sel);
+                }
+                return hits;
+            });
+
+            expect(collisions, `picker covers ${collisions.join(', ')}`).toHaveLength(0);
+        });
+    }
+}
