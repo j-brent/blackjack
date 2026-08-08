@@ -6,6 +6,36 @@
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /**
+ * Themable card tokens. Sizes are unitless viewBox user units (see
+ * .claude/learnings css.md g6h7i8j9 — font-size stays an SVG attribute so
+ * no px enters the stylesheet). Cached per theme; the cache key is the
+ * active data-theme, so switching themes re-reads automatically.
+ */
+let cardTokens = null;
+let cardTokensTheme = null;
+
+function getCardTokens() {
+    const theme = document.documentElement.dataset.theme || '';
+    if (cardTokens && cardTokensTheme === theme) {
+        return cardTokens;
+    }
+
+    const styles = getComputedStyle(document.documentElement);
+    const read = (name, fallback) => styles.getPropertyValue(name).trim() || fallback;
+
+    cardTokens = {
+        rankSize: read('--card-rank-size', '56'),
+        suitSize: read('--card-suit-size', '56'),
+        suitCenterSize: read('--card-suit-center-size', '120'),
+        backMarkSize: read('--card-back-mark-size', '48'),
+        // CSS string value — strip the surrounding quotes.
+        backMark: read('--card-back-mark', '??').replace(/^["']|["']$/g, '')
+    };
+    cardTokensTheme = theme;
+    return cardTokens;
+}
+
+/**
  * Map rank enum values to display strings.
  * @param {number} rank - Rank enum value from WASM
  * @returns {string} Display string (A, 2-10, J, Q, K)
@@ -131,16 +161,17 @@ export function createCardElement(card) {
 
     const rankStr = rankToString(card.rank);
     const suitSymbol = suitToSymbol(card.suit);
+    const tokens = getCardTokens();
 
     // Top-left rank and suit
-    svg.appendChild(svgText('card-rank-top', '15', '62', rankStr, { 'font-size': '56' }));
-    svg.appendChild(svgText('card-suit-top', '15', '110', suitSymbol, { 'font-size': '56' }));
+    svg.appendChild(svgText('card-rank-top', '15', '62', rankStr, { 'font-size': tokens.rankSize }));
+    svg.appendChild(svgText('card-suit-top', '15', '110', suitSymbol, { 'font-size': tokens.suitSize }));
 
     // Center suit
     svg.appendChild(svgText('card-suit-center', '125', '200', suitSymbol, {
         'text-anchor': 'middle',
         'dominant-baseline': 'central',
-        'font-size': '120'
+        'font-size': tokens.suitCenterSize
     }));
 
     // Bottom-right rank and suit (rotated 180° around card center)
@@ -148,11 +179,11 @@ export function createCardElement(card) {
     // extends inward after rotation — stays within viewBox.
     svg.appendChild(svgText('card-rank-bottom', '15', '62', rankStr, {
         'transform': 'rotate(180, 125, 175)',
-        'font-size': '56'
+        'font-size': tokens.rankSize
     }));
     svg.appendChild(svgText('card-suit-bottom', '15', '110', suitSymbol, {
         'transform': 'rotate(180, 125, 175)',
-        'font-size': '56'
+        'font-size': tokens.suitSize
     }));
 
     return svg;
@@ -194,20 +225,21 @@ export function createFaceDownCard() {
     defs.appendChild(pattern);
     svg.appendChild(defs);
 
-    // Card background with stripe pattern
+    // Card background. Fill and stroke come from CSS (--card-back-*), which
+    // wins over any SVG presentation attribute anyway (css.md e4f5g6h7).
     const rect = document.createElementNS(SVG_NS, 'rect');
     rect.setAttribute('class', 'card-bg');
     rect.setAttribute('width', '250');
     rect.setAttribute('height', '350');
     rect.setAttribute('rx', '12');
-    rect.setAttribute('fill', 'url(#card-back-stripes)');
     svg.appendChild(rect);
 
-    // Center text
-    svg.appendChild(svgText('card-back-text', '125', '175', '??', {
+    // Center mark
+    const tokens = getCardTokens();
+    svg.appendChild(svgText('card-back-mark', '125', '175', tokens.backMark, {
         'text-anchor': 'middle',
         'dominant-baseline': 'central',
-        'font-size': '48'
+        'font-size': tokens.backMarkSize
     }));
 
     return svg;

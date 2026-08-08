@@ -57,6 +57,21 @@
     --card-height: 7em;
     --card-overlap-visible: 1.5em; /* visible strip per overlapped card (rank+suit corner) */
     --card-cascade-down: 1em; /* vertical step per card in diagonal cascade */
+
+    /* Card glyph sizes — unitless viewBox user units, applied by
+       card-renderer.js as SVG font-size attributes. Kept unitless so no px
+       enters the stylesheet. */
+    --card-rank-size: 56;
+    --card-suit-size: 56;
+    --card-suit-center-size: 120;
+    --card-back-mark-size: 48;
+
+    /* Face-down card appearance */
+    --card-back-fill: url(#card-back-stripes);
+    --card-back-stroke: none;
+    --card-back-stroke-width: 1;
+    --card-back-mark: "??";
+    --card-back-mark-fill: var(--color-text-primary);
 }
 
 /* Base Styles */
@@ -209,8 +224,9 @@ main {
 }
 
 .card.face-down .card-bg {
-    fill: url(#card-back-stripes);
-    stroke: none;
+    fill: var(--card-back-fill);
+    stroke: var(--card-back-stroke);
+    stroke-width: var(--card-back-stroke-width);
 }
 
 .card-rank-top,
@@ -234,10 +250,10 @@ main {
 }
 
 /* Face-down card (SVG) */
-.card-back-text {
+.card-back-mark {
     font-weight: 700;
     font-family: var(--font-family-base);
-    fill: var(--color-text-primary);
+    fill: var(--card-back-mark-fill);
 }
 
 /* Hand Value Display */
