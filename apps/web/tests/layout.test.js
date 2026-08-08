@@ -109,7 +109,10 @@ test('AT-5: no px units in design token custom properties', async () => {
     const declarations = rootBlock[1];
     const lines = declarations.split('\n');
 
-    const tokenPrefixes = ['--space-', '--font-size-', '--card-', '--border-radius-'];
+    const tokenPrefixes = [
+        '--space-', '--font-size-', '--card-', '--border-radius-',
+        '--btn-radius', '--panel-radius',
+    ];
 
     for (const line of lines) {
         const trimmed = line.trim();
@@ -118,15 +121,21 @@ test('AT-5: no px units in design token custom properties', async () => {
         const matchesToken = tokenPrefixes.some(prefix => trimmed.includes(prefix));
         if (!matchesToken) continue;
 
+        // Shadows are exempt: px is the convention for shadow offsets and
+        // blur radii. Matched explicitly rather than relying on a token name
+        // that happens to dodge the prefix list.
+        const tokenName = trimmed.split(':')[0].trim();
+        if (tokenName.includes('shadow')) continue;
+
         // Extract the value part after the colon
         const colonIndex = trimmed.indexOf(':');
         if (colonIndex === -1) continue;
         const value = trimmed.slice(colonIndex + 1).trim().replace(';', '');
 
-        // Assert no px units (shadow values are excluded since they use px by convention)
+        // Assert no px units
         expect(
             value,
-            `Token "${trimmed.split(':')[0].trim()}" should not use px, found: ${value}`
+            `Token "${tokenName}" should not use px, found: ${value}`
         ).not.toMatch(/\d+px/);
     }
 });

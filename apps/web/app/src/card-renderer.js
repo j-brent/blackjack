@@ -212,13 +212,13 @@ export function createFaceDownCard() {
     const stripe1 = document.createElementNS(SVG_NS, 'rect');
     stripe1.setAttribute('width', '10');
     stripe1.setAttribute('height', '20');
-    stripe1.setAttribute('fill', 'var(--color-card-back, #1a4d80)');
+    stripe1.setAttribute('fill', 'var(--card-back-stripe, #1a4d80)');
 
     const stripe2 = document.createElementNS(SVG_NS, 'rect');
     stripe2.setAttribute('x', '10');
     stripe2.setAttribute('width', '10');
     stripe2.setAttribute('height', '20');
-    stripe2.setAttribute('fill', 'var(--color-card-back-pattern, #2a5d90)');
+    stripe2.setAttribute('fill', 'var(--card-back-stripe-alt, #2a5d90)');
 
     pattern.appendChild(stripe1);
     pattern.appendChild(stripe2);
