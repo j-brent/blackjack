@@ -81,9 +81,22 @@ Open http://localhost:8080.
 ```sh
 npm install
 npx playwright install chromium
-python -m http.server -d app 8080 &
 npm test
 ```
+
+`npm test` starts and stops its own server — do not pre-start one. The port
+defaults to 8080 and is overridden with `BJ_PORT`:
+
+```sh
+BJ_PORT=8081 npm test          # bash
+$env:BJ_PORT=8081; npm test    # PowerShell
+```
+
+Use a non-default port when another worktree already has a server on 8080.
+The config sets `reuseExistingServer: false` on purpose: a process already
+bound to the port may be serving a *different* checkout, and reusing it
+would silently test the wrong code. If the port is taken the run fails with
+`http://localhost:<port> is already used`.
 
 Acceptance tests (in `tests/layout.test.js`):
 - AT-1 through AT-3: No scroll required at 360x640, 390x844, 414x896
@@ -91,6 +104,9 @@ Acceptance tests (in `tests/layout.test.js`):
 - AT-5: No px units in CSS design token custom properties
 - AT-6: No horizontal overflow at 200% zoom
 - AT-7: Split hands fit at 360x640
+- AT-8: Cards display valid rank and suit text
+- AT-9: Card SVG text stays within the viewBox
+- AT-10: Children stay within parent bounds at 360x640
 
 ### Architecture notes
 

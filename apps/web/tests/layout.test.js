@@ -3,7 +3,10 @@ const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
 
-const BASE_URL = 'http://localhost:8080';
+// Port is configurable so tests can run against a worktree-specific server
+// without colliding with one already bound to the default port.
+const PORT = process.env.BJ_PORT || '8080';
+const BASE_URL = `http://localhost:${PORT}`;
 
 // Viewports representing real devices
 const VIEWPORTS = {
