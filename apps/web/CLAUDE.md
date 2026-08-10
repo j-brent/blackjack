@@ -14,6 +14,7 @@ cmake --build build
 # Serve
 python -m http.server -d app 8080
 
-# Test
+# Test (starts its own server; BJ_PORT overrides the default 8080)
 npm test
+BJ_PORT=8081 npm test
 ```

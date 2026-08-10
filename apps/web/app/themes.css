@@ -1,0 +1,690 @@
+/* Theme definitions
+ *
+ * Each block restates only what the design changes. Structure lives in
+ * style.css; a theme flips on the decorative chrome it needs (rail,
+ * kicker, divider, frame) and repaints the tokens.
+ *
+ * Source designs: designs/blackjack-design-*.html
+ */
+
+/* ==========================================================================
+   Noir Club — centred panel, gold on charcoal, Playfair display face
+   ========================================================================== */
+[data-theme="noir-club"] {
+    --bg: oklch(16% 0.004 60);
+    --surface: oklch(20% 0.006 60);
+    --surface-alt: oklch(20% 0.006 60);
+    --fg: oklch(94% 0.01 80);
+    --muted: oklch(66% 0.018 75);
+    --border: oklch(31% 0.012 65);
+    --border-subtle: oklch(31% 0.012 65);
+
+    --accent: oklch(74% 0.09 83);
+    --accent-hover: oklch(66% 0.09 83);
+    --accent-active: oklch(60% 0.09 83);
+    --accent-ink: oklch(15% 0.01 60);
+
+    --danger: oklch(62% 0.16 25);
+    --success: oklch(68% 0.11 155);
+    --warning: oklch(75% 0.13 70);
+    --hint: oklch(66% 0.018 75);
+    --active-border: oklch(74% 0.09 83);
+    --disabled-bg: oklch(26% 0.008 60);
+    --disabled-fg: oklch(48% 0.012 65);
+
+    --card-face: oklch(95% 0.012 80);
+    --card-ink: oklch(18% 0.006 60);
+    --card-red: oklch(48% 0.16 25);
+    --card-edge: oklch(88% 0.012 80);
+    --card-shadow: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+    --card-shadow-hover: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
+    --card-back-fill: oklch(20% 0.006 60);
+    --card-back-stroke: oklch(74% 0.09 83);
+    --card-back-stroke-width: 2;
+    --card-back-mark: "♠";
+    --card-back-mark-fill: oklch(74% 0.09 83);
+    --card-back-mark-size: 64;
+
+    --font-body: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+
+    --btn-radius: 0.125rem;
+    --panel-radius: 0.25rem;
+}
+
+[data-theme="noir-club"] #header {
+    background-color: transparent;
+    border-bottom: none;
+    text-align: center;
+    padding: var(--space-md) var(--space-lg) 0;
+}
+
+[data-theme="noir-club"] .kicker {
+    /* inline-block so the box hugs the text: a full-width block would sit
+       under the fixed picker even though the centred text does not. */
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+[data-theme="noir-club"] .kicker::before {
+    content: "Private Table — No. VII";
+}
+
+[data-theme="noir-club"] #header h1 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+[data-theme="noir-club"] .header-rule {
+    display: block;
+    height: 1px;
+    margin-top: var(--space-md);
+    background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+}
+
+[data-theme="noir-club"] .seat-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-shrink: 0;
+}
+
+[data-theme="noir-club"] .seat-divider::before,
+[data-theme="noir-club"] .seat-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+[data-theme="noir-club"] .seat-divider span::before {
+    content: "vs";
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+[data-theme="noir-club"] #status-bar {
+    background-color: transparent;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+[data-theme="noir-club"] #status-message {
+    text-align: center;
+    color: var(--muted);
+}
+
+[data-theme="noir-club"] .hint {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.7rem;
+    color: var(--hint);
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+}
+
+[data-theme="noir-club"] .hint::before {
+    content: "H · Hit    S · Stand";
+}
+
+/* ==========================================================================
+   Midnight Tuxedo — side rail, left-aligned dossier, seats as rows
+   ========================================================================== */
+[data-theme="midnight-tuxedo"] {
+    --bg: oklch(14% 0.006 50);
+    --surface: oklch(18% 0.007 50);
+    --surface-alt: oklch(18% 0.007 50);
+    --fg: oklch(95% 0.008 80);
+    --muted: oklch(64% 0.012 70);
+    --border: oklch(30% 0.008 60);
+    --border-subtle: oklch(30% 0.008 60);
+
+    --accent: oklch(80% 0.02 90);
+    --accent-hover: oklch(72% 0.02 90);
+    --accent-active: oklch(66% 0.02 90);
+    --accent-ink: oklch(14% 0.006 50);
+
+    --danger: oklch(62% 0.16 25);
+    --success: oklch(70% 0.11 155);
+    --warning: oklch(78% 0.12 75);
+    --hint: oklch(64% 0.012 70);
+    --active-border: oklch(80% 0.02 90);
+    --disabled-bg: oklch(24% 0.008 55);
+    --disabled-fg: oklch(46% 0.01 60);
+
+    --card-face: oklch(95% 0.008 80);
+    --card-ink: oklch(18% 0.006 50);
+    --card-red: oklch(53% 0.2 27);
+    --card-edge: oklch(88% 0.008 80);
+    --card-shadow: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+    --card-shadow-hover: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
+    --card-back-fill: oklch(18% 0.007 50);
+    --card-back-stroke: oklch(80% 0.02 90);
+    --card-back-stroke-width: 1.5;
+    --card-back-mark: "♣";
+    --card-back-mark-fill: oklch(80% 0.02 90);
+    --card-back-mark-size: 58;
+
+    --font-body: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Frank Ruhl Libre', Georgia, serif;
+
+    --btn-radius: 0.0625rem;
+    --panel-radius: 0.0625rem;
+}
+
+[data-theme="midnight-tuxedo"] #game-container {
+    flex-direction: row;
+}
+
+[data-theme="midnight-tuxedo"] #rail {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+    width: 7rem;
+    padding: var(--space-lg) var(--space-md);
+    border-right: 1px solid var(--border);
+}
+
+[data-theme="midnight-tuxedo"] .rail-kicker {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 auto;
+}
+
+[data-theme="midnight-tuxedo"] .rail-kicker::before {
+    content: "Table VII — Private";
+}
+
+[data-theme="midnight-tuxedo"] .rail-mark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.07em;
+}
+
+[data-theme="midnight-tuxedo"] .rail-mark::before {
+    content: "B.J.";
+}
+
+[data-theme="midnight-tuxedo"] .rail-status {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+[data-theme="midnight-tuxedo"] .rail-status::before {
+    content: "In Play";
+}
+
+[data-theme="midnight-tuxedo"] #header {
+    background-color: transparent;
+    border-bottom: none;
+    padding: var(--space-lg) var(--space-lg) 0;
+}
+
+[data-theme="midnight-tuxedo"] #header h1 {
+    text-align: left;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+[data-theme="midnight-tuxedo"] .header-rule {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+}
+
+[data-theme="midnight-tuxedo"] .header-rule::before {
+    content: "Dossier";
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+[data-theme="midnight-tuxedo"] .header-rule::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* Split hands keep the display face, but not the fixed label column that
+   the single-hand rows use. */
+[data-theme="midnight-tuxedo"] .hand-container h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+}
+
+/* Seats become label | cards | value rows. */
+[data-theme="midnight-tuxedo"] #dealer-area,
+[data-theme="midnight-tuxedo"] #player-area {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-lg);
+}
+
+[data-theme="midnight-tuxedo"] #dealer-area h2,
+[data-theme="midnight-tuxedo"] #player-area h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    width: 5rem;
+    flex-shrink: 0;
+    text-align: left;
+}
+
+[data-theme="midnight-tuxedo"] #dealer-value,
+[data-theme="midnight-tuxedo"] #player-value {
+    margin-left: auto;
+    font-weight: 600;
+}
+
+[data-theme="midnight-tuxedo"] #actions {
+    justify-content: flex-start;
+    padding-left: var(--space-lg);
+}
+
+[data-theme="midnight-tuxedo"] #status-bar {
+    background-color: transparent;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-md);
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+}
+
+[data-theme="midnight-tuxedo"] .hint {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--hint);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    opacity: 0.8;
+}
+
+[data-theme="midnight-tuxedo"] .hint::before {
+    content: "H · HIT   S · STAND";
+}
+
+/* Below 40rem the vertical rail costs more width than the action row can
+   spare, so it becomes a thin horizontal strip — as the source design does. */
+@media (max-width: 40rem) {
+    [data-theme="midnight-tuxedo"] #game-container {
+        flex-direction: column;
+    }
+
+    [data-theme="midnight-tuxedo"] #rail {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: auto;
+        /* Right padding clears the fixed theme picker, which would
+           otherwise sit on top of the rail's mark. */
+        padding: var(--space-xs) 3.25rem var(--space-xs) var(--space-md);
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    [data-theme="midnight-tuxedo"] .rail-kicker {
+        writing-mode: horizontal-tb;
+        margin: 0;
+    }
+
+    [data-theme="midnight-tuxedo"] .rail-foot {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-sm);
+    }
+
+    [data-theme="midnight-tuxedo"] #header {
+        padding-top: var(--space-sm);
+    }
+
+    [data-theme="midnight-tuxedo"] #actions {
+        justify-content: center;
+        padding-left: var(--space-md);
+    }
+}
+
+/* ==========================================================================
+   Champagne Playbill — dealer and player side by side, gold rule between
+   ========================================================================== */
+[data-theme="champagne-playbill"] {
+    --bg: oklch(15% 0.01 70);
+    --surface: oklch(19% 0.012 70);
+    --surface-alt: oklch(19% 0.012 70);
+    --fg: oklch(94% 0.012 85);
+    --muted: oklch(62% 0.02 75);
+    --border: oklch(30% 0.015 70);
+    --border-subtle: oklch(30% 0.015 70);
+
+    --accent: oklch(83% 0.06 85);
+    --accent-hover: oklch(75% 0.06 85);
+    --accent-active: oklch(69% 0.06 85);
+    --accent-ink: oklch(15% 0.01 70);
+
+    --danger: oklch(62% 0.17 27);
+    --success: oklch(70% 0.11 155);
+    --warning: oklch(80% 0.12 78);
+    --hint: oklch(62% 0.02 75);
+    --active-border: oklch(83% 0.06 85);
+    --disabled-bg: oklch(25% 0.012 70);
+    --disabled-fg: oklch(47% 0.015 72);
+
+    --card-face: oklch(94% 0.014 85);
+    --card-ink: oklch(19% 0.01 70);
+    --card-red: oklch(54% 0.2 27);
+    --card-edge: oklch(87% 0.014 85);
+    --card-shadow: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+    --card-shadow-hover: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
+    --card-back-fill: oklch(19% 0.012 70);
+    --card-back-stroke: oklch(83% 0.06 85);
+    --card-back-stroke-width: 1.5;
+    --card-back-mark: "♦";
+    --card-back-mark-fill: oklch(83% 0.06 85);
+    --card-back-mark-size: 56;
+
+    --font-body: 'Jost', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'EB Garamond', Georgia, serif;
+
+    --btn-radius: 0.0625rem;
+    --panel-radius: 0.125rem;
+}
+
+[data-theme="champagne-playbill"] #header {
+    background-color: transparent;
+    border-bottom: none;
+    text-align: center;
+    padding: var(--space-md) var(--space-lg) 0;
+}
+
+[data-theme="champagne-playbill"] .kicker {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: var(--space-xs);
+}
+
+[data-theme="champagne-playbill"] .kicker::before {
+    content: "An Evening At The Table";
+}
+
+[data-theme="champagne-playbill"] #header h1 {
+    font-style: italic;
+    font-weight: 600;
+}
+
+/* Dealer and player share a row, split by a gold rule. */
+[data-theme="champagne-playbill"] #seats {
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-lg);
+}
+
+[data-theme="champagne-playbill"] .seat-divider {
+    display: block;
+    width: 1px;
+    flex-shrink: 0;
+    background: var(--accent);
+}
+
+[data-theme="champagne-playbill"] #dealer-area h2,
+[data-theme="champagne-playbill"] #player-area h2,
+[data-theme="champagne-playbill"] .hand-container h3 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+}
+
+[data-theme="champagne-playbill"] #status-bar {
+    background-color: transparent;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+[data-theme="champagne-playbill"] #status-message {
+    text-align: center;
+    color: var(--muted);
+}
+
+[data-theme="champagne-playbill"] .hint {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.68rem;
+    color: var(--hint);
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+}
+
+[data-theme="champagne-playbill"] .hint::before {
+    content: "H · HIT   S · STAND";
+}
+
+/* ==========================================================================
+   Monte Carlo Gold — marquee title, oval plaque, pill buttons
+   ========================================================================== */
+[data-theme="monte-carlo-gold"] {
+    --bg: oklch(13% 0.008 55);
+    --surface: oklch(17% 0.01 55);
+    --surface-alt: oklch(17% 0.01 55);
+    --fg: oklch(95% 0.01 85);
+    --muted: oklch(63% 0.02 75);
+    --border: oklch(29% 0.015 60);
+    --border-subtle: oklch(29% 0.015 60);
+
+    --accent: oklch(78% 0.14 85);
+    --accent-hover: oklch(70% 0.14 85);
+    --accent-active: oklch(64% 0.14 85);
+    --accent-ink: oklch(13% 0.008 55);
+
+    --danger: oklch(62% 0.17 27);
+    --success: oklch(70% 0.11 155);
+    --warning: oklch(80% 0.13 78);
+    --hint: oklch(63% 0.02 75);
+    --active-border: oklch(78% 0.14 85);
+    --disabled-bg: oklch(24% 0.012 58);
+    --disabled-fg: oklch(46% 0.015 62);
+
+    --card-face: oklch(95% 0.012 85);
+    --card-ink: oklch(18% 0.008 55);
+    --card-red: oklch(54% 0.2 27);
+    --card-edge: oklch(88% 0.012 85);
+    --card-shadow: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+    --card-shadow-hover: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6));
+    --card-back-fill: oklch(17% 0.01 55);
+    --card-back-stroke: oklch(78% 0.14 85);
+    --card-back-stroke-width: 1.5;
+    --card-back-mark: "MC";
+    --card-back-mark-fill: oklch(78% 0.14 85);
+    --card-back-mark-size: 44;
+
+    --font-body: 'Work Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Abril Fatface', Georgia, serif;
+
+    --btn-radius: 999rem;
+    --panel-radius: 1rem;
+}
+
+[data-theme="monte-carlo-gold"] #header {
+    background-color: transparent;
+    border-bottom: none;
+    text-align: center;
+    padding: var(--space-md) var(--space-lg) 0;
+}
+
+[data-theme="monte-carlo-gold"] .kicker {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+[data-theme="monte-carlo-gold"] .kicker::before {
+    content: "Monte Carlo — Salon Privé";
+}
+
+[data-theme="monte-carlo-gold"] #header h1 {
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+}
+
+[data-theme="monte-carlo-gold"] .header-rule {
+    display: block;
+    width: 4.5rem;
+    height: 2px;
+    background: var(--accent);
+    margin: var(--space-sm) auto 0;
+}
+
+/* The plaque: a rounded frame with an inset second border. */
+[data-theme="monte-carlo-gold"] #frame {
+    border: 1px solid var(--border);
+    border-radius: var(--panel-radius);
+    padding: var(--space-md);
+    position: relative;
+}
+
+[data-theme="monte-carlo-gold"] #frame::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--panel-radius) - 0.2rem);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+[data-theme="monte-carlo-gold"] .seat-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+[data-theme="monte-carlo-gold"] .seat-divider::before,
+[data-theme="monte-carlo-gold"] .seat-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+[data-theme="monte-carlo-gold"] .seat-divider span::before {
+    content: "vs";
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+}
+
+[data-theme="monte-carlo-gold"] #dealer-area h2,
+[data-theme="monte-carlo-gold"] #player-area h2,
+[data-theme="monte-carlo-gold"] .hand-container h3 {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+[data-theme="monte-carlo-gold"] button {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: var(--font-size-sm);
+}
+
+[data-theme="monte-carlo-gold"] #theme-menu button {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+}
+
+[data-theme="monte-carlo-gold"] #theme-menu button[aria-checked="true"] {
+    font-weight: 700;
+}
+
+[data-theme="monte-carlo-gold"] #status-bar {
+    background-color: transparent;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+[data-theme="monte-carlo-gold"] #status-message {
+    text-align: center;
+    color: var(--muted);
+}
+
+[data-theme="monte-carlo-gold"] .hint {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.68rem;
+    color: var(--hint);
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+}
+
+[data-theme="monte-carlo-gold"] .hint::before {
+    content: "H · HIT   S · STAND";
+}
+
+/* ==========================================================================
+   Shared theme chrome — all four are dark, gold-accented and use an
+   outlined secondary button rather than the classic solid pair.
+   ========================================================================== */
+[data-theme] #header h1 {
+    font-family: var(--font-display);
+}
+
+[data-theme] button {
+    font-family: var(--font-body);
+}
+
+[data-theme] #btn-stand,
+[data-theme] #btn-split {
+    background-color: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+}
+
+[data-theme] #btn-stand:hover:not(:disabled),
+[data-theme] #btn-split:hover:not(:disabled) {
+    background-color: transparent;
+    border-color: var(--fg);
+}
+
+[data-theme] #btn-stand:disabled,
+[data-theme] #btn-split:disabled {
+    background-color: transparent;
+    border-color: var(--disabled-bg);
+    color: var(--disabled-fg);
+}
+
+[data-theme] button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}

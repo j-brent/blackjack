@@ -1,25 +1,47 @@
-/* Design Tokens */
+/* Design Tokens
+ *
+ * Themes override these on [data-theme]; nothing below this block should
+ * hardcode a colour, font or radius. Token names follow the design
+ * mockups in designs/ so a theme only has to restate what it changes.
+ */
 :root {
-    /* Colors */
-    --color-primary: #2a7de1;
-    --color-primary-dark: #1f5fb8;
-    --color-primary-darker: #174a8b;
-    --color-success: #4caf50;
-    --color-error: #f44336;
-    --color-warning: #ff9800;
-    --color-bg-dark: #1a1a1a;
-    --color-bg-medium: #2a2a2a;
-    --color-bg-light: #333333;
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #aaaaaa;
-    --color-text-disabled: #999999;
-    --color-card-bg: #ffffff;
-    --color-card-red: #dc143c;
-    --color-card-black: #000000;
-    --color-card-back: #1a4d80;
-    --color-card-back-pattern: #2a5d90;
-    --color-border-active: #4a9eff;
-    --color-border-inactive: #555555;
+    color-scheme: dark;
+
+    /* Core palette */
+    --bg: #2a2a2a;
+    --surface: #1a1a1a;
+    --surface-alt: #222222;
+    --fg: #ffffff;
+    --muted: #aaaaaa;
+    --border: #555555;
+    --border-subtle: #333333;
+
+    /* Accent — primary action colour */
+    --accent: #2a7de1;
+    --accent-hover: #1f5fb8;
+    --accent-active: #174a8b;
+    --accent-ink: #ffffff; /* text/icons drawn on top of --accent */
+
+    /* Semantic state */
+    --success: #4caf50;
+    --danger: #f44336;
+    --warning: #ff9800;
+    --hint: #aaaaaa; /* keyboard hints — must stay >= 4.5:1 on --surface */
+    /* Backdrop behind the load-failure screen. Derived from --danger so it
+       tints toward each theme's own red instead of a fixed maroon that
+       clashes with the gold palettes. */
+    --error-wash: color-mix(in oklab, var(--danger) 12%, var(--bg));
+    --active-border: #4a9eff;
+    --disabled-bg: #555555;
+    --disabled-fg: #999999;
+
+    /* Cards */
+    --card-face: #ffffff;
+    --card-ink: #000000;
+    --card-red: #dc143c;
+    --card-edge: #cccccc;
+    --card-shadow: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    --card-shadow-hover: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
 
     /* Spacing (rem-based) */
     --space-xs: 0.25rem;
@@ -27,25 +49,20 @@
     --space-md: 0.75rem;
     --space-lg: 1rem;
     --space-xl: 1.5rem;
-    --space-2xl: 2rem;
 
     /* Typography (rem-based) */
-    --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-body: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
     --font-size-lg: 1.125rem;
-    --font-size-xl: 1.5rem;
     --font-size-2xl: 2rem;
     --font-size-3xl: 2.5rem;
-    --font-weight-normal: 400;
     --font-weight-bold: 700;
 
-    /* Borders & Shadows */
-    --border-radius-sm: 0.25rem;
-    --border-radius-md: 0.5rem;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.5);
+    /* Radii */
+    --btn-radius: 0.5rem;
+    --panel-radius: 0.5rem;
 
     /* Transitions */
     --transition-fast: 200ms ease-out;
@@ -57,6 +74,23 @@
     --card-height: 7em;
     --card-overlap-visible: 1.5em; /* visible strip per overlapped card (rank+suit corner) */
     --card-cascade-down: 1em; /* vertical step per card in diagonal cascade */
+
+    /* Card glyph sizes — unitless viewBox user units, applied by
+       card-renderer.js as SVG font-size attributes. Kept unitless so no px
+       enters the stylesheet. */
+    --card-rank-size: 56;
+    --card-suit-size: 56;
+    --card-suit-center-size: 120;
+    --card-back-mark-size: 48;
+
+    /* Face-down card appearance */
+    --card-back-stripe: #1a4d80;
+    --card-back-stripe-alt: #2a5d90;
+    --card-back-fill: url(#card-back-stripes);
+    --card-back-stroke: none;
+    --card-back-stroke-width: 1;
+    --card-back-mark: "??";
+    --card-back-mark-fill: var(--fg);
 }
 
 /* Base Styles */
@@ -67,10 +101,10 @@
 }
 
 body {
-    font-family: var(--font-family-base);
+    font-family: var(--font-body);
     font-size: var(--font-size-base);
-    color: var(--color-text-primary);
-    background-color: var(--color-bg-medium);
+    color: var(--fg);
+    background-color: var(--bg);
     line-height: 1.5;
     overflow-x: hidden;
 }
@@ -89,8 +123,8 @@ body {
 .loading-spinner {
     width: 3rem;
     height: 3rem;
-    border: 3px solid var(--color-bg-light);
-    border-top-color: var(--color-primary);
+    border: 3px solid var(--border-subtle);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -100,7 +134,7 @@ body {
 }
 
 .error-container {
-    background-color: rgba(139, 0, 0, 0.2);
+    background-color: var(--error-wash);
 }
 
 .error-message {
@@ -113,22 +147,22 @@ body {
     padding: var(--space-md) var(--space-xl);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text-primary);
-    background-color: var(--color-primary);
+    color: var(--accent-ink);
+    background-color: var(--accent);
     border: none;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--btn-radius);
     cursor: pointer;
     transition: background-color var(--transition-fast);
 }
 
 .btn-reload:hover {
-    background-color: var(--color-primary-dark);
+    background-color: var(--accent-hover);
 }
 
 .noscript-message {
     padding: var(--space-xl);
-    background-color: var(--color-error);
-    color: var(--color-text-primary);
+    background-color: var(--danger);
+    color: var(--fg);
     text-align: center;
     font-size: var(--font-size-lg);
 }
@@ -141,19 +175,42 @@ body {
     overflow: hidden;
 }
 
+/* Stage — header/main/footer column. A separate element from
+   #game-container so a theme can put a rail beside it. */
+#stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Side rail — only midnight-tuxedo shows this. */
+#rail {
+    display: none;
+}
+
 /* Header */
 #header {
     flex-shrink: 0;
-    background-color: var(--color-bg-dark);
-    border-bottom: 2px solid var(--color-bg-light);
+    background-color: var(--surface);
+    border-bottom: 2px solid var(--border-subtle);
     padding: var(--space-sm) 0;
     z-index: 10;
 }
 
 #header h1 {
+    font-family: var(--font-display);
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     text-align: center;
+}
+
+/* Decorative chrome — themes supply the text via CSS content. */
+.kicker,
+.header-rule,
+.seat-divider,
+.hint {
+    display: none;
 }
 
 /* Main Content — absorbs remaining space */
@@ -163,6 +220,21 @@ main {
     flex-direction: column;
     padding: var(--space-md);
     gap: var(--space-md);
+    min-height: 0;
+}
+
+/* Frame — optional decorative surround (monte-carlo-gold's plaque). */
+#frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#seats {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     min-height: 0;
 }
 
@@ -182,7 +254,7 @@ main {
 #dealer-area h2,
 #player-area h2 {
     font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
+    color: var(--muted);
 }
 
 /* Card Container */
@@ -198,19 +270,20 @@ main {
     width: var(--card-width);
     height: var(--card-height);
     flex-shrink: 0;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    filter: var(--card-shadow);
     transition: filter var(--transition-fast);
 }
 
 .card-bg {
-    fill: var(--color-card-bg);
-    stroke: #cccccc;
+    fill: var(--card-face);
+    stroke: var(--card-edge);
     stroke-width: 1;
 }
 
 .card.face-down .card-bg {
-    fill: url(#card-back-stripes);
-    stroke: none;
+    fill: var(--card-back-fill);
+    stroke: var(--card-back-stroke);
+    stroke-width: var(--card-back-stroke-width);
 }
 
 .card-rank-top,
@@ -218,26 +291,26 @@ main {
 .card-rank-bottom,
 .card-suit-bottom {
     font-weight: 700;
-    font-family: var(--font-family-base);
+    font-family: var(--font-body);
 }
 
 .card-suit-center {
-    font-family: var(--font-family-base);
+    font-family: var(--font-body);
 }
 
 .card.red text {
-    fill: var(--color-card-red);
+    fill: var(--card-red);
 }
 
 .card.black text {
-    fill: var(--color-card-black);
+    fill: var(--card-ink);
 }
 
 /* Face-down card (SVG) */
-.card-back-text {
+.card-back-mark {
     font-weight: 700;
-    font-family: var(--font-family-base);
-    fill: var(--color-text-primary);
+    font-family: var(--font-body);
+    fill: var(--card-back-mark-fill);
 }
 
 /* Hand Value Display */
@@ -247,7 +320,7 @@ main {
 }
 
 .value.bust {
-    color: var(--color-error);
+    color: var(--danger);
 }
 
 /* Split Layout */
@@ -255,6 +328,8 @@ main {
     flex: 1;
     display: flex;
     flex-direction: row;
+    align-items: center; /* hands hug their content instead of stretching
+                            into full-height boxes */
     gap: var(--space-sm);
     padding: var(--space-sm);
     min-height: 0;
@@ -266,21 +341,24 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* Hugs its content when there is room, but never grows past the split
+       area — centred flex items overflow in both directions otherwise. */
+    max-height: 100%;
     gap: var(--space-xs);
     padding: var(--space-sm);
-    border: 1px solid var(--color-border-inactive);
-    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border);
+    border-radius: var(--panel-radius);
     transition: border var(--transition-fast);
     min-height: 0;
 }
 
 .hand-container.active {
-    border: 2px solid var(--color-border-active);
+    border: 2px solid var(--active-border);
 }
 
 .hand-container h3 {
     font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
+    color: var(--muted);
 }
 
 /* Actions — always horizontal */
@@ -299,41 +377,41 @@ button {
     min-width: 7rem;
     height: 2.75rem;
     padding: 0 var(--space-md);
-    font-family: var(--font-family-base);
+    font-family: var(--font-body);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text-primary);
-    background-color: var(--color-primary);
+    color: var(--accent-ink);
+    background-color: var(--accent);
     border: none;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--btn-radius);
     cursor: pointer;
     transition: background-color var(--transition-fast);
 }
 
 button:hover:not(:disabled) {
-    background-color: var(--color-primary-dark);
+    background-color: var(--accent-hover);
 }
 
 button:focus {
-    outline: 2px solid var(--color-text-primary);
+    outline: 2px solid var(--fg);
     outline-offset: 2px;
 }
 
 button:active:not(:disabled) {
-    background-color: var(--color-primary-darker);
+    background-color: var(--accent-active);
 }
 
 button:disabled {
-    background-color: var(--color-border-inactive);
-    color: var(--color-text-disabled);
+    background-color: var(--disabled-bg);
+    color: var(--disabled-fg);
     cursor: not-allowed;
 }
 
 /* Status Bar */
 #status-bar {
     flex-shrink: 0;
-    background-color: #222222;
-    border-top: 1px solid var(--color-bg-light);
+    background-color: var(--surface-alt);
+    border-top: 1px solid var(--border-subtle);
     padding: var(--space-sm) var(--space-md);
 }
 
@@ -343,15 +421,96 @@ button:disabled {
 }
 
 #status-message.success {
-    color: var(--color-success);
+    color: var(--success);
 }
 
 #status-message.error {
-    color: var(--color-error);
+    color: var(--danger);
 }
 
 #status-message.warning {
-    color: var(--color-warning);
+    color: var(--warning);
+}
+
+/* Theme Picker — fixed to the viewport, not to any theme's header.
+   The four themes have incompatible headers (midnight-tuxedo has none at
+   all), so this is the one placement that works for every one of them. */
+#theme-picker {
+    position: fixed;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    z-index: 100;
+}
+
+#theme-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-width: 0;
+    padding: 0;
+    background-color: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--btn-radius);
+    color: var(--muted);
+    opacity: 0.75;
+    transition: opacity var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+#theme-button svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+}
+
+#theme-button:hover:not(:disabled),
+#theme-button[aria-expanded="true"] {
+    background-color: transparent;
+    color: var(--accent);
+    border-color: var(--accent);
+    opacity: 1;
+}
+
+#theme-menu {
+    position: absolute;
+    top: calc(100% + var(--space-xs));
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 11.5rem;
+    padding: var(--space-xs);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--panel-radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+#theme-menu[hidden] {
+    display: none;
+}
+
+#theme-menu button {
+    min-width: 0;
+    height: auto;
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    text-align: left;
+    color: var(--fg);
+    background-color: transparent;
+    border-radius: var(--btn-radius);
+}
+
+#theme-menu button:hover:not(:disabled) {
+    background-color: var(--bg);
+}
+
+#theme-menu button[aria-checked="true"] {
+    color: var(--accent);
+    font-weight: var(--font-weight-bold);
 }
 
 /* Animations */
@@ -422,7 +581,7 @@ button:disabled {
     }
 
     .card:hover {
-        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+        filter: var(--card-shadow-hover);
     }
 
     #player-area-split {

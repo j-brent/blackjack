@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blackjack — Monte Carlo Gold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: oklch(13% 0.008 55);
+    --surface: oklch(17% 0.01 55);
+    --fg: oklch(95% 0.01 85);
+    --muted: oklch(63% 0.02 75);
+    --border: oklch(29% 0.015 60);
+    --accent: oklch(78% 0.14 85);
+    --accent-hover: oklch(70% 0.14 85);
+    --accent-ink: oklch(13% 0.008 55);
+    --card-face: oklch(95% 0.012 85);
+    --card-ink: oklch(18% 0.008 55);
+    --card-red: oklch(54% 0.2 27);
+    --font-display: 'Abril Fatface', Georgia, serif;
+    --font-body: 'Work Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    min-height: 100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 3rem 1.25rem;
+    line-height: 1.5;
+  }
+  .marquee{ width: 100%; max-width: 34rem; text-align:center; }
+  .kicker{
+    display:block;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  h1{
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 4.2rem;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+    margin-bottom: 0.5rem;
+  }
+  .gold-rule{
+    width: 4.5rem;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 auto 2.5rem;
+  }
+  .plaque{
+    border: 1px solid var(--border);
+    border-radius: 999px / 42%;
+    padding: 3rem 2.5rem 2.5rem;
+    position: relative;
+  }
+  .plaque::before{
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid oklch(29% 0.015 60 / 0.6);
+    border-radius: 999px / 42%;
+    pointer-events: none;
+  }
+  .seats{ display:flex; flex-direction:column; gap: 1.9rem; }
+  .seat{ display:flex; flex-direction:column; align-items:center; gap: 0.6rem; }
+  .seat-label{
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  .cards{ display:flex; justify-content:center; }
+  .card{ width: 4.4rem; height: 6.15rem; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.5)); }
+  .card:not(:first-child){ margin-left: -1.85rem; }
+  .card-bg{ fill: var(--card-face); }
+  .card.red text{ fill: var(--card-red); }
+  .card.black text{ fill: var(--card-ink); }
+  .card-rank-top, .card-suit-top, .card-rank-bottom, .card-suit-bottom{
+    font-family: var(--font-body); font-weight: 700;
+  }
+  .card.face-down .card-bg{ fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; }
+  .card-back-mark{ fill: var(--accent); font-family: var(--font-display); font-size: 30px; }
+  .hand-value{ font-size: 0.92rem; font-weight: 600; }
+  .hand-value .soft{ color: var(--muted); font-weight: 400; }
+  .divider{ display:flex; align-items:center; gap: 0.6rem; }
+  .divider::before, .divider::after{ content:""; flex:1; height:1px; background: var(--border); }
+  .divider span{ font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; }
+  #actions{ display:flex; justify-content:center; gap: 0.75rem; margin-top: 2.25rem; }
+  button{
+    min-width: 8.5rem; height: 3rem;
+    font-family: var(--font-body); font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    border-radius: 999px; cursor:pointer;
+    transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out;
+  }
+  .btn-primary{ background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent); }
+  .btn-primary:hover{ background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-secondary{ background: transparent; color: var(--fg); border: 1px solid var(--border); }
+  .btn-secondary:hover{ border-color: var(--fg); }
+  button:focus-visible{ outline: 2px solid var(--accent); outline-offset: 2px; }
+  button:active{ transform: translateY(1px); }
+  footer{ margin-top: 1.75rem; }
+  #status-message{ font-size: 0.85rem; color: var(--muted); }
+  .hint{ display:block; margin-top: 0.3rem; font-size: 0.68rem; color: var(--border); letter-spacing: 0.08em; }
+  @media (max-width: 26rem){
+    h1{ font-size: 3rem; }
+    .plaque{ padding: 2.25rem 1.25rem 2rem; border-radius: 28px; }
+    .plaque::before{ border-radius: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="marquee" data-od-id="table-panel">
+  <header data-od-id="header">
+    <span class="kicker">Monte Carlo — Salon Privé</span>
+    <h1>Blackjack</h1>
+    <div class="gold-rule"></div>
+  </header>
+
+  <div class="plaque">
+    <div class="seats">
+      <section class="seat" data-od-id="dealer-area" aria-labelledby="dealer-label">
+        <p class="seat-label" id="dealer-label">Dealer</p>
+        <div class="cards">
+          <svg class="card face-down" viewBox="0 0 250 350" role="img" aria-label="Hole card hidden">
+            <rect class="card-bg" width="250" height="350" rx="10"/>
+            <text class="card-back-mark" x="125" y="195" text-anchor="middle">MC</text>
+          </svg>
+          <svg class="card black" viewBox="0 0 250 350" role="img" aria-label="Queen of Spades">
+            <rect class="card-bg" width="250" height="350" rx="10"/>
+            <text class="card-rank-top" x="20" y="60" font-size="48">Q</text>
+            <text class="card-suit-top" x="20" y="106" font-size="40">♠</text>
+            <text class="card-suit-center" x="125" y="185" font-size="96" text-anchor="middle" dominant-baseline="central">♠</text>
+            <text class="card-rank-bottom" x="20" y="60" font-size="48" transform="rotate(180,125,175)">Q</text>
+            <text class="card-suit-bottom" x="20" y="106" font-size="40" transform="rotate(180,125,175)">♠</text>
+          </svg>
+        </div>
+        <p class="hand-value" id="dealer-value">Showing: 10</p>
+      </section>
+
+      <div class="divider"><span>vs</span></div>
+
+      <section class="seat" data-od-id="player-area" aria-labelledby="player-label">
+        <p class="seat-label" id="player-label">Your Hand</p>
+        <div class="cards">
+          <svg class="card red" viewBox="0 0 250 350" role="img" aria-label="Ace of Hearts">
+            <rect class="card-bg" width="250" height="350" rx="10"/>
+            <text class="card-rank-top" x="20" y="60" font-size="48">A</text>
+            <text class="card-suit-top" x="20" y="106" font-size="40">♥</text>
+            <text class="card-suit-center" x="125" y="185" font-size="96" text-anchor="middle" dominant-baseline="central">♥</text>
+            <text class="card-rank-bottom" x="20" y="60" font-size="48" transform="rotate(180,125,175)">A</text>
+            <text class="card-suit-bottom" x="20" y="106" font-size="40" transform="rotate(180,125,175)">♥</text>
+          </svg>
+          <svg class="card black" viewBox="0 0 250 350" role="img" aria-label="Seven of Clubs">
+            <rect class="card-bg" width="250" height="350" rx="10"/>
+            <text class="card-rank-top" x="20" y="60" font-size="48">7</text>
+            <text class="card-suit-top" x="20" y="106" font-size="40">♣</text>
+            <text class="card-suit-center" x="125" y="185" font-size="96" text-anchor="middle" dominant-baseline="central">♣</text>
+            <text class="card-rank-bottom" x="20" y="60" font-size="48" transform="rotate(180,125,175)">7</text>
+            <text class="card-suit-bottom" x="20" y="106" font-size="40" transform="rotate(180,125,175)">♣</text>
+          </svg>
+        </div>
+        <p class="hand-value" id="player-value">Value: 18 <span class="soft">(soft)</span></p>
+      </section>
+    </div>
+  </div>
+
+  <div id="actions" data-od-id="actions">
+    <button class="btn-primary" data-od-id="btn-hit">Hit</button>
+    <button class="btn-secondary" data-od-id="btn-stand">Stand</button>
+  </div>
+
+  <footer data-od-id="status-bar">
+    <p id="status-message">Your turn</p>
+    <span class="hint">H · HIT&nbsp;&nbsp;&nbsp;S · STAND</span>
+  </footer>
+</div>
+</body>
+</html>

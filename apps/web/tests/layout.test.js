@@ -3,7 +3,10 @@ const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
 
-const BASE_URL = 'http://localhost:8080';
+// Port is configurable so tests can run against a worktree-specific server
+// without colliding with one already bound to the default port.
+const PORT = process.env.BJ_PORT || '8080';
+const BASE_URL = `http://localhost:${PORT}`;
 
 // Viewports representing real devices
 const VIEWPORTS = {
@@ -14,9 +17,27 @@ const VIEWPORTS = {
     desktop: { width: 1920, height: 1080 },
 };
 
+// Selectable designs. Every layout guarantee has to hold for all of them,
+// not just whichever is default.
+const THEMES = ['noir-club', 'midnight-tuxedo', 'champagne-playbill', 'monte-carlo-gold'];
+const DEFAULT_THEME = THEMES[0];
+
 async function waitForGameReady(page) {
     await page.waitForSelector('#game-container', { state: 'visible', timeout: 10000 });
     await page.waitForSelector('.card', { state: 'visible', timeout: 10000 });
+}
+
+/**
+ * Load the app with a specific theme applied before first paint.
+ */
+async function gotoWithTheme(page, theme) {
+    await page.goto(BASE_URL);
+    await page.evaluate(t => localStorage.setItem('bj-theme', t), theme);
+    await page.reload();
+    await waitForGameReady(page);
+    await page.waitForFunction(
+        t => document.documentElement.dataset.theme === t, theme, { timeout: 5000 }
+    );
 }
 
 // AT-1: No scroll required at 360x640
@@ -106,7 +127,10 @@ test('AT-5: no px units in design token custom properties', async () => {
     const declarations = rootBlock[1];
     const lines = declarations.split('\n');
 
-    const tokenPrefixes = ['--space-', '--font-size-', '--card-', '--border-radius-'];
+    const tokenPrefixes = [
+        '--space-', '--font-size-', '--card-', '--border-radius-',
+        '--btn-radius', '--panel-radius',
+    ];
 
     for (const line of lines) {
         const trimmed = line.trim();
@@ -115,15 +139,21 @@ test('AT-5: no px units in design token custom properties', async () => {
         const matchesToken = tokenPrefixes.some(prefix => trimmed.includes(prefix));
         if (!matchesToken) continue;
 
+        // Shadows are exempt: px is the convention for shadow offsets and
+        // blur radii. Matched explicitly rather than relying on a token name
+        // that happens to dodge the prefix list.
+        const tokenName = trimmed.split(':')[0].trim();
+        if (tokenName.includes('shadow')) continue;
+
         // Extract the value part after the colon
         const colonIndex = trimmed.indexOf(':');
         if (colonIndex === -1) continue;
         const value = trimmed.slice(colonIndex + 1).trim().replace(';', '');
 
-        // Assert no px units (shadow values are excluded since they use px by convention)
+        // Assert no px units
         expect(
             value,
-            `Token "${trimmed.split(':')[0].trim()}" should not use px, found: ${value}`
+            `Token "${tokenName}" should not use px, found: ${value}`
         ).not.toMatch(/\d+px/);
     }
 });
@@ -323,3 +353,143 @@ test('AT-10: visual containment at 360x640', async ({ page }) => {
         expect(v, v.join('\n')).toHaveLength(0);
     }
 });
+
+// AT-11: every theme fits the smallest viewport without scrolling.
+for (const theme of THEMES) {
+    test(`AT-11 [${theme}]: fits 360x640 without scroll`, async ({ page }) => {
+        await page.setViewportSize(VIEWPORTS.smallAndroid);
+        await gotoWithTheme(page, theme);
+
+        const overflow = await page.evaluate(() => ({
+            v: document.documentElement.scrollHeight - window.innerHeight,
+            h: document.documentElement.scrollWidth - window.innerWidth,
+        }));
+        expect(overflow.v, `${theme} scrolls vertically`).toBeLessThanOrEqual(0);
+        expect(overflow.h, `${theme} scrolls horizontally`).toBeLessThanOrEqual(0);
+
+        // Cards must not spill out of their container in any layout.
+        const noHScroll = await page.evaluate(() =>
+            [...document.querySelectorAll('.card-container')]
+                .every(el => el.scrollWidth <= el.clientWidth));
+        expect(noHScroll, `${theme} overflows a card container`).toBe(true);
+    });
+}
+
+// AT-12: every theme keeps the essential elements inside the viewport.
+for (const theme of THEMES) {
+    test(`AT-12 [${theme}]: game elements within viewport at 360x640`, async ({ page }) => {
+        await page.setViewportSize(VIEWPORTS.smallAndroid);
+        await gotoWithTheme(page, theme);
+
+        const { width, height } = VIEWPORTS.smallAndroid;
+        for (const selector of ['#dealer-cards', '#player-cards', '#actions', '#status-bar', '#theme-button']) {
+            const box = await page.locator(selector).boundingBox();
+            expect(box, `${theme}: ${selector} should be visible`).not.toBeNull();
+            expect(box.y + box.height, `${theme}: ${selector} below fold`).toBeLessThanOrEqual(height + 1);
+            expect(box.x + box.width, `${theme}: ${selector} past right edge`).toBeLessThanOrEqual(width + 1);
+        }
+    });
+}
+
+// AT-13: the chosen theme survives a reload and an unknown value falls back.
+test('AT-13: theme persists across reload', async ({ page }) => {
+    await page.goto(BASE_URL);
+    await waitForGameReady(page);
+
+    // Default applies when nothing is stored.
+    await page.evaluate(() => localStorage.removeItem('bj-theme'));
+    await page.reload();
+    await waitForGameReady(page);
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe(DEFAULT_THEME);
+
+    // Picking a theme sticks.
+    await page.click('#theme-button');
+    await page.click('[data-theme="monte-carlo-gold"]');
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('monte-carlo-gold');
+
+    await page.reload();
+    await waitForGameReady(page);
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('monte-carlo-gold');
+    expect(await page.evaluate(() => localStorage.getItem('bj-theme'))).toBe('monte-carlo-gold');
+
+    // A junk value must not leave the page unthemed.
+    await page.evaluate(() => localStorage.setItem('bj-theme', 'not-a-theme'));
+    await page.reload();
+    await waitForGameReady(page);
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe(DEFAULT_THEME);
+});
+
+// AT-14: no theme leaves a token undefined — a missing override would fall
+// back to the classic palette and silently break the design.
+for (const theme of THEMES) {
+    test(`AT-14 [${theme}]: paints from theme tokens`, async ({ page }) => {
+        await gotoWithTheme(page, theme);
+
+        const tokens = await page.evaluate(() => {
+            const cs = getComputedStyle(document.documentElement);
+            const names = [
+                '--bg', '--surface', '--fg', '--muted', '--border', '--accent',
+                '--accent-hover', '--accent-ink', '--danger', '--success', '--warning',
+                '--hint', '--card-face', '--card-ink', '--card-red', '--card-back-mark',
+                '--font-body', '--font-display', '--btn-radius', '--panel-radius',
+            ];
+            const out = {};
+            names.forEach(n => { out[n] = cs.getPropertyValue(n).trim(); });
+            return out;
+        });
+
+        for (const [name, value] of Object.entries(tokens)) {
+            expect(value, `${theme}: ${name} is empty`).not.toBe('');
+        }
+        // The classic blue must not survive into any theme.
+        expect(tokens['--accent'].toLowerCase()).not.toContain('2a7de1');
+    });
+}
+
+// AT-15: the picker is fixed to the viewport corner, so it can collide with
+// whatever chrome a theme puts there. It must not cover any of it.
+for (const theme of THEMES) {
+    for (const [label, size] of [['360x640', VIEWPORTS.smallAndroid], ['480x800', { width: 480, height: 800 }]]) {
+        test(`AT-15 [${theme} @ ${label}]: picker does not overlap chrome`, async ({ page }) => {
+            await page.setViewportSize(size);
+            await gotoWithTheme(page, theme);
+
+            const collisions = await page.evaluate(() => {
+                const btn = document.getElementById('theme-button').getBoundingClientRect();
+                const targets = ['#header h1', '.kicker', '.rail-kicker', '.rail-mark', '.rail-status'];
+
+                // Measure painted text, not the element box: a centred h1 in a
+                // full-width block has a box that reaches under the button
+                // while its glyphs sit nowhere near it.
+                function inkRect(el) {
+                    const hasText = [...el.childNodes]
+                        .some(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+                    if (hasText) {
+                        const range = document.createRange();
+                        range.selectNodeContents(el);
+                        return range.getBoundingClientRect();
+                    }
+                    // Text supplied by ::before — the element box is the ink
+                    // box provided the element is not a full-width block.
+                    return el.getBoundingClientRect();
+                }
+
+                const hits = [];
+                for (const sel of targets) {
+                    const el = document.querySelector(sel);
+                    if (!el) continue;
+                    const cs = getComputedStyle(el);
+                    if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+                    const r = inkRect(el);
+                    if (r.width === 0 || r.height === 0) continue;
+                    const overlaps = !(r.right <= btn.left || r.left >= btn.right ||
+                                       r.bottom <= btn.top || r.top >= btn.bottom);
+                    if (overlaps) hits.push(sel);
+                }
+                return hits;
+            });
+
+            expect(collisions, `picker covers ${collisions.join(', ')}`).toHaveLength(0);
+        });
+    }
+}
