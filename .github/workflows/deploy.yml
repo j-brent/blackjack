@@ -3,19 +3,23 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
+# Every job that pushes to gh-pages shares this group so pushes never race.
+# The cleanup workflow uses the same group name.
 concurrency:
-  group: pages
+  group: gh-pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-publish:
+    # Fork PRs get a read-only token and cannot push to gh-pages.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,18 +38,58 @@ jobs:
           emcmake cmake -B build -S . -G Ninja
           cmake --build build
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: apps/web/app
+      - name: Determine publish target
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "dir=preview/pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          fi
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish to gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET: ${{ steps.target.outputs.dir }}
+        run: |
+          set -euo pipefail
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          # Clone gh-pages if it exists, otherwise start it as an orphan branch.
+          if ! git clone --branch gh-pages --single-branch --depth 1 "$remote" pages 2>/dev/null; then
+            rm -rf pages
+            git clone --depth 1 "$remote" pages
+            git -C pages checkout --orphan gh-pages
+            git -C pages rm -rq --cached . || true
+            find pages -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} +
+          fi
+
+          if [ "$TARGET" = "." ]; then
+            # Replace the root site but leave the preview/ tree untouched.
+            find pages -mindepth 1 -maxdepth 1 -not -name .git -not -name preview -exec rm -rf {} +
+          else
+            rm -rf "pages/$TARGET"
+          fi
+          mkdir -p "pages/$TARGET"
+          cp -r apps/web/app/. "pages/$TARGET/"
+          touch pages/.nojekyll
+
+          cd pages
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "deploy: publish ${TARGET} from ${GITHUB_SHA}"
+          git push origin gh-pages
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.target.outputs.dir }}" = "." ]; then
+            url="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
+          else
+            url="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/${{ steps.target.outputs.dir }}/"
+          fi
+          echo "Published to $url" >> "$GITHUB_STEP_SUMMARY"

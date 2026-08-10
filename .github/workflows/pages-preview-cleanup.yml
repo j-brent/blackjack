@@ -1,0 +1,48 @@
+name: Clean up Pages preview
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+# Shared with deploy.yml so a cleanup never races a publish.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    # Fork PRs never published a preview, so there is nothing to remove.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove preview directory
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          if ! git clone --branch gh-pages --single-branch --depth 1 "$remote" pages 2>/dev/null; then
+            echo "No gh-pages branch; nothing to clean."
+            exit 0
+          fi
+
+          cd pages
+          if [ ! -d "preview/pr-${PR}" ]; then
+            echo "No preview for PR #${PR}."
+            exit 0
+          fi
+
+          rm -rf "preview/pr-${PR}"
+          rmdir preview 2>/dev/null || true
+
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "chore(pages): remove preview for PR #${PR}"
+          git push origin gh-pages
+          echo "Removed preview/pr-${PR}." >> "$GITHUB_STEP_SUMMARY"
